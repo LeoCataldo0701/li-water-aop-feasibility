@@ -6,7 +6,7 @@
 Developed a Python-based computational model using a 6-equation stiff ODE system to simulate photo-Fenton degradation of PFAS in real Suffolk County, Long Island conditions. The framework evaluates treatment feasibility, performs iron catalyst optimization, and calculates cost-per-µg removed.
 
 **Key Results**:
-- Photo-Fenton AOPs achieved only ~60% degradation after 2 hours due to radical scavenging.
+- Photo-Fenton AOPs achieved only ~60% degradation after 2 hours due to scavenging and the strong bonds of PFAS
 - Treatment costs reached up to $0.44 per microgram removed, making chemical oxidation impractical at scale for high-concentration plumes.
 - Constrained optimization and sensitivity analysis identified optimal conditions while highlighting why public water extensions are the more practical near-term solution.
 
