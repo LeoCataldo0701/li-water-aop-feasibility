@@ -10,6 +10,8 @@ Developed a Python-based computational model using a 6-equation stiff ODE system
 - Treatment costs reached up to $0.44 per microgram removed, making chemical oxidation impractical at scale for high-concentration plumes.
 - Constrained optimization and sensitivity analysis identified optimal conditions while highlighting why public water extensions are the more practical near-term solution.
 
+- Website is able to be deployed via streamlit. Link: https://li-water-aop-feasibility-jxv6p3cqcsmchi9ltrtgqp.streamlit.app/
+
 ### Technical Details
 - **Language**: Python
 - **Solver**: SciPy `solve_ivp` with BDF method for stiff systems
