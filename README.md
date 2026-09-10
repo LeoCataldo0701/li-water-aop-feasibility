@@ -3,10 +3,10 @@
 Recent testing in Calverton, NY revealed toxic "forever chemicals" in groundwater at levels far exceeding safe drinking water standards:
 
 Contaminant	Detected Level	Safe Limit	Times Over Limit
-PFOA	580 ppt	10 ppt	58x ❌
-PFOS	63 ppt	10 ppt	6.3x ❌
-PFNA	7,580 ppt	No federal limit yet	🚨
-1,4-Dioxane	14.9 ppb	1 ppb	14.9x ❌
+- PFOA	580 ppt	10 ppt	58x ❌
+- PFOS	63 ppt	10 ppt	6.3x ❌
+- PFNA	7,580 ppt	No federal limit yet	🚨
+- 1,4-Dioxane	14.9 ppb	1 ppb	14.9x ❌
 
 Peconic River surface water surged from 4 ppt to 100 ppt in just 2 years, a 25x spike.
 
