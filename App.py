@@ -82,6 +82,159 @@ def show_landing_page():
     
     **Built by a Long Island student** | Data: Suffolk County Dept. of Health Services
     """)
+# ═══════════════════════════════════════════════════════════════
+# RESULTS PAGE — CONTAMINATION + TREATMENT COMPARISON
+# ═══════════════════════════════════════════════════════════════
+def show_results_page():
+    well_name = st.session_state.selected_well
+    well_data = BOMARC_WELLS[well_name]
+    
+    # Back button
+    if st.button("← Back to Check"):
+        st.session_state.page = "landing"
+        st.rerun()
+    
+    st.markdown("---")
+    
+    # ──────────────────────────────────────────────────────────
+    # CONTAMINATION ALERT
+    # ──────────────────────────────────────────────────────────
+    st.title(f"💧 {well_name}")
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric(
+            "Contaminant",
+            well_data["contaminant"],
+        )
+    with col2:
+        st.metric(
+            "Detected Level",
+            f"{well_data['level_ng_l']} ng/L"
+        )
+    with col3:
+        multiplier = well_data["level_ng_l"] / well_data["safe_limit_ng_l"]
+        st.metric(
+            "vs. Safe Limit",
+            f"{multiplier:.0f}x over"
+        )
+    
+    # Big warning
+    st.error(f"""
+    ⚠️ **{well_data['contaminant']} IS {well_data['level_ng_l'] / well_data['safe_limit_ng_l']:.0f}x ABOVE SAFE LIMITS**
+    
+    New York drinking water standard: {well_data['safe_limit_ng_l']} ng/L
+    Detected: {well_data['level_ng_l']} ng/L
+    """)
+    
+    st.markdown("---")
+    
+    # ──────────────────────────────────────────────────────────
+    # TREATMENT COMPARISON
+    # ──────────────────────────────────────────────────────────
+    st.markdown("### What Can Be Done?")
+    st.markdown("Two proven treatment options:")
+    
+    treatments = TREATMENT_OPTIONS
+    col_left, col_right = st.columns(2)
+    
+    # CARBON ADSORPTION CARD
+    with col_left:
+        st.subheader("🔘 Carbon Adsorption")
+        
+        metric_col1, metric_col2 = st.columns(2)
+        with metric_col1:
+            st.metric("Removal", f"{treatments['carbon']['removal_percent']}%")
+            st.metric("Time", f"{treatments['carbon']['contact_time_min']} min")
+        with metric_col2:
+            st.metric("Cost/Liter", f"${treatments['carbon']['cost_per_liter']:.2f}")
+            st.metric("Risk", "Moderate")
+        
+        st.markdown("**Pros:**")
+        for pro in treatments['carbon']['pros']:
+            st.markdown(f"✓ {pro}")
+        
+        st.markdown("**Cons:**")
+        for con in treatments['carbon']['cons']:
+            st.markdown(f"✗ {con}")
+    
+    # PHOTO-FENTON CARD
+    with col_right:
+        st.subheader("⚡ Photo-Fenton AOP")
+        
+        metric_col1, metric_col2 = st.columns(2)
+        with metric_col1:
+            st.metric("Removal", f"{treatments['photo_fenton']['removal_percent']}%")
+            st.metric("Time", f"{treatments['photo_fenton']['contact_time_min']} min")
+        with metric_col2:
+            st.metric("Cost/Liter", f"${treatments['photo_fenton']['cost_per_liter']:.2f}")
+            st.metric("Risk", "Lower")
+        
+        st.markdown("**Pros:**")
+        for pro in treatments['photo_fenton']['pros']:
+            st.markdown(f"✓ {pro}")
+        
+        st.markdown("**Cons:**")
+        for con in treatments['photo_fenton']['cons']:
+            st.markdown(f"✗ {con}")
+    
+    st.markdown("---")
+    
+    # ──────────────────────────────────────────────────────────
+    # COMPARISON CHART
+    # ──────────────────────────────────────────────────────────
+    st.markdown("### Side-by-Side Comparison")
+    
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    
+    # Chart 1: Removal %
+    ax1 = axes[0]
+    treatment_names = ["Carbon", "Photo-Fenton"]
+    removals = [75, 90]
+    colors_bar = ["#FFA500", "#4CAF50"]
+    bars = ax1.bar(treatment_names, removals, color=colors_bar, alpha=0.8, edgecolor="black", linewidth=2)
+    ax1.axhline(80, color="red", linestyle="--", linewidth=2, label="80% effectiveness threshold")
+    ax1.set_ylabel("Removal %", fontsize=12, fontweight="bold")
+    ax1.set_ylim(0, 105)
+    ax1.legend()
+    ax1.grid(True, alpha=0.3, axis="y")
+    
+    # Add value labels on bars
+    for bar in bars:
+        height = bar.get_height()
+        ax1.text(bar.get_x() + bar.get_width()/2., height,
+                f'{int(height)}%',
+                ha='center', va='bottom', fontweight='bold', fontsize=12)
+    
+    # Chart 2: Cost per liter
+    ax2 = axes[1]
+    costs = [0.25, 0.35]
+    bars2 = ax2.bar(treatment_names, costs, color=colors_bar, alpha=0.8, edgecolor="black", linewidth=2)
+    ax2.set_ylabel("Cost per Liter ($)", fontsize=12, fontweight="bold")
+    ax2.set_ylim(0, 0.50)
+    ax2.grid(True, alpha=0.3, axis="y")
+    
+    # Add value labels
+    for bar in bars2:
+        height = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2., height,
+                f'${height:.2f}',
+                ha='center', va='bottom', fontweight='bold', fontsize=12)
+    
+    plt.tight_layout()
+    st.pyplot(fig)
+    
+    st.markdown("---")
+    
+    # ──────────────────────────────────────────────────────────
+    # ACTION BUTTON
+    # ──────────────────────────────────────────────────────────
+    st.markdown("### What Next?")
+    st.info("Your town official needs to know about this contamination.")
+    
+    if st.button("📧 Email Your Official", type="primary", use_container_width=True):
+        st.session_state.page = "action"
+        st.rerun()
 
 # ═══════════════════════════════════════════════════════════════
 # PAGE ROUTING
