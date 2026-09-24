@@ -4,32 +4,87 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
+from well_data import BOMARC_WELLS, FIELD_CONDITIONS, TREATMENT_OPTIONS
 
-# ─────────────────────────────────────────
-# PAGE CONFIG
-# ─────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════
+# PAGE CONFIG & STATE
+# ═══════════════════════════════════════════════════════════════
 st.set_page_config(
-    page_title="LI PFAS Treatment Optimizer",
+    page_title="LI Water Safety Check",
     page_icon="💧",
     layout="wide"
 )
 
-# ─────────────────────────────────────────
-# HEADER
-# ─────────────────────────────────────────
-st.title("💧 Long Island PFAS Treatment Optimizer")
-st.subheader("Photo-Fenton Advanced Oxidation Process Feasibility Model")
-st.caption(
-    "Developed by Leo Cataldo | CUNY MEC Vittadello Lab | "
-    "Initial conditions: Finkelstein et al. 2025 USGS Suffolk County data"
-)
-st.warning(
-    "⚠️ **Validation pending.** Rate constants are literature-derived (Hori et al. 2004; "
-    "De Laat & Gallard 1999). Experimental validation against field data is in progress. "
-    "Results are for feasibility screening only."
-)
+# Initialize session state
+if "page" not in st.session_state:
+    st.session_state.page = "landing"
+if "selected_well" not in st.session_state:
+    st.session_state.selected_well = None
 
-st.divider()
+# ═══════════════════════════════════════════════════════════════
+# LANDING PAGE
+# ═══════════════════════════════════════════════════════════════
+def show_landing_page():
+    st.title("💧 Is Your Water Safe?")
+    st.subheader("Real data from Long Island contamination sites")
+    
+    st.markdown("""
+    ### The Problem
+    
+    **BOMARC Site (Westhampton)** groundwater contamination:
+    - **PFOA:** 100 ng/L (10x New York safe limit)
+    - **PFOS:** 120 ng/L (12x safe limit)  
+    - **Drinking water wellhead:** PFOA at 64 ng/L
+    
+    Most residents don't know **what treatment works** or **what it costs**.
+    This tool shows you both.
+    """)
+    
+    st.markdown("---")
+    st.markdown("### Check Your Water")
+    
+    # Well selection
+    well_option = st.radio(
+        "Which contaminated well are you checking?",
+        [
+            "BOM-25 (PFOA 100 ng/L) — Industrial area",
+            "BOM-26 (PFOS 120 ng/L) — Industrial area",
+            "Pines MWG-2 (PFOA 64 ng/L) — Drinking water supply"
+        ],
+        index=0
+    )
+    
+    # Parse selection
+    if "BOM-25" in well_option:
+        well_name = "BOM-25"
+    elif "BOM-26" in well_option:
+        well_name = "BOM-26"
+    else:
+        well_name = "Pines MWG-2"
+    
+    # Big button
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("🔍 See Solutions", type="primary", use_container_width=True):
+            st.session_state.selected_well = well_name
+            st.session_state.page = "results"
+            st.rerun()
+    
+    st.markdown("---")
+    st.markdown("""
+    ### How This Tool Works
+    
+    1. **Check contamination level** at your well
+    2. **Compare treatment options** side-by-side (cost, time, effectiveness)
+    3. **See the science** behind each treatment
+    4. **Take action** — Email your town official
+    
+    **Built by a Long Island student** | Data: Suffolk County Dept. of Health Services
+    """)
+
+# Show landing page initially
+if st.session_state.page == "landing":
+    show_landing_page()
 
 # ─────────────────────────────────────────
 # SIDEBAR — INPUTS
