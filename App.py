@@ -45,24 +45,20 @@ def show_landing_page():
     st.markdown("### Check Your Water")
     
     # Well selection
-    well_option = st.radio(
-        "Which contaminated well are you checking?",
-        [
-            "BOM-25 (PFOA 100 ng/L) — Industrial area",
-            "BOM-26 (PFOS 120 ng/L) — Industrial area",
-            "Pines MWG-2 (PFOA 64 ng/L) — Drinking water supply"
-        ],
-        index=0
-    )
-    
-    # Parse selection
-    if "BOM-25" in well_option:
-        well_name = "BOM-25"
-    elif "BOM-26" in well_option:
-        well_name = "BOM-26"
-    else:
-        well_name = "Pines MWG-2"
-    
+   # Create label options dynamically from whatever is in BOMARC_WELLS
+well_options = {
+    f"{key} ({data['contaminant']} {data['level_ng_l']} ng/L) — {data['location']}": key
+    for key, data in BOMARC_WELLS.items()
+}
+
+selected_label = st.radio(
+    "Which contaminated well are you checking?",
+    options=list(well_options.keys()),
+    index=0
+)
+
+# Look up the actual well key (e.g., "BOM-25") from the label
+well_name = well_options[selected_label]
     # Big button
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
