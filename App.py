@@ -235,6 +235,109 @@ def show_results_page():
     if st.button("📧 Email Your Official", type="primary", use_container_width=True):
         st.session_state.page = "action"
         st.rerun()
+# ═══════════════════════════════════════════════════════════════
+# ACTION PAGE — EMAIL GENERATOR
+# ═══════════════════════════════════════════════════════════════
+def show_action_page():
+    well_name = st.session_state.selected_well
+    well_data = BOMARC_WELLS[well_name]
+    
+    # Back button
+    if st.button("← Back to Results"):
+        st.session_state.page = "results"
+        st.rerun()
+    
+    st.markdown("---")
+    st.title("📧 Take Action Now")
+    
+    st.markdown(f"""
+    Your town official needs to know about **{well_data['contaminant']} contamination at {well_data['level_ng_l']} ng/L**.
+    
+    This email takes 30 seconds to send and creates pressure for action.
+    """)
+    
+    st.markdown("---")
+    
+    # Input fields
+    col1, col2 = st.columns(2)
+    with col1:
+        town = st.text_input("Your town", "Westhampton", key="town_input")
+        official_name = st.text_input("Official name (e.g., 'Town Supervisor')", "Town Board", key="official_name_input")
+    with col2:
+        official_title = st.text_input("Official title (e.g., 'Supervisor')", "Member", key="official_title_input")
+        official_email = st.text_input("Official email", "", key="official_email_input")
+    
+    st.markdown("---")
+    
+    # Email template
+    st.markdown("### Your Email")
+    
+    email_subject = f"URGENT: PFAS Contamination at {well_name} — {town}"
+    
+    email_body = f"""Subject: {email_subject}
+
+Dear {official_name},
+
+I am writing to bring urgent attention to PFAS contamination detected in {town} groundwater:
+
+**Contamination Details:**
+- Well/Location: {well_name}
+- Contaminant: {well_data['contaminant']}
+- Level Detected: {well_data['level_ng_l']} ng/L
+- Safe Limit (NY State): {well_data['safe_limit_ng_l']} ng/L
+- OVER LIMIT BY: {well_data['level_ng_l'] / well_data['safe_limit_ng_l']:.0f}x
+
+**Treatment Options Available:**
+1. Carbon Adsorption: 75% removal, 20 minutes, $0.25/liter
+2. Photo-Fenton AOP: 90% removal, 45 minutes, $0.35/liter
+
+**What I'm Asking:**
+1. Acknowledge receipt of this data
+2. Publish a public health notice
+3. Hold a town meeting within 30 days to discuss remediation timeline and budget
+4. Specify which treatment method will be deployed and by when
+
+Residents deserve transparent communication about water safety. I urge you to prioritize this issue.
+
+Respectfully,
+[Your Name]
+[Your Address]
+[Your Phone Number]"""
+    
+    st.text_area("Copy this email:", email_body, height=300, disabled=True)
+    
+    st.markdown("---")
+    
+    # Action buttons
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        if st.button("📋 Copy Email to Clipboard", use_container_width=True):
+            st.success("✅ Email copied! Paste into your email client.")
+            st.code(email_body, language="text")
+    
+    with col2:
+        if official_email:
+            mailto_link = f"mailto:{official_email}?subject={email_subject}&body={email_body}"
+            st.markdown(f"[📧 Open Email Client]({mailto_link})")
+    
+    with col3:
+        if st.button("🔗 Share with Friends", use_container_width=True):
+            st.info("Share this link with neighbors: [app link here]")
+    
+    st.markdown("---")
+    
+    st.markdown("""
+    ### Why This Matters
+    
+    Elected officials act when constituents contact them. **One email makes a difference.**
+    
+    - You're not asking for a donation
+    - You're asking for transparency and action
+    - You have real data to back your request
+    
+    Send this email today.
+    """)
 
 # ═══════════════════════════════════════════════════════════════
 # PAGE ROUTING
