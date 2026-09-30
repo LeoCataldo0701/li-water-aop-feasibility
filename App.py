@@ -378,6 +378,46 @@ def show_results_page():
             ax2.grid(True, alpha=0.3)
             st.pyplot(fig2)
 
+        # ─────────────────────────────────────────
+        # INSIDE show_results_page() -> if run_button:
+        # ─────────────────────────────────────────
+
+        # ... [Photo-Fenton simulation calculations above] ...
+
+        with st.spinner("Running simulation..."):
+            # 1. Run the Photo-Fenton simulation
+            sol = run_simulation(H2O2_mol, Fe_mol, PFOA_0, k_f, k_r)
+    
+            # 2. CALL THE CARBON SIMULATION HERE
+            carbon_results = run_carbon_simulation(
+                C0_ng_l=float(well_data['level_ng_l']),
+                gac_cost_kg=cost_gac_per_kg,
+                bed_mass_kg=carbon_bed_mass_kg,
+                flow_rate_gpm=flow_rate_gpm
+            )
+
+        # 3. USE THE RETURNED CARBON RESULTS IN YOUR UI
+        st.markdown("### 🔘 Carbon Treatment Performance (Simulated)")
+        c_col1, c_col2, c_col3 = st.columns(3)
+
+        with c_col1:
+            st.metric(
+                "Days to Breakthrough (10%)", 
+                f"{carbon_results['days_to_breakthrough']:.1f} days"
+            )
+
+        with c_col2:
+            st.metric(
+                "Calculated Cost / Liter", 
+                f"${carbon_results['cost_per_liter']:.4f}"
+            )
+
+        with c_col3:
+            st.metric(
+                "Average PFOA Removal", 
+                f"{carbon_results['avg_removal_pct']:.1f}%"
+            )
+
     st.markdown("---")
 
     # Action Section
