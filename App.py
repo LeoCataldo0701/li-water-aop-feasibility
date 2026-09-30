@@ -46,19 +46,19 @@ def show_landing_page():
     
     # Well selection
    # Create label options dynamically from whatever is in BOMARC_WELLS
-well_options = {
-    f"{key} ({data['contaminant']} {data['level_ng_l']} ng/L) — {data['location']}": key
-    for key, data in BOMARC_WELLS.items()
+    well_options = {
+        f"{key} ({data['contaminant']} {data['level_ng_l']} ng/L) — {data['location']}": key
+        for key, data in BOMARC_WELLS.items()
 }
 
-selected_label = st.radio(
-    "Which contaminated well are you checking?",
-    options=list(well_options.keys()),
-    index=0
+    selected_label = st.radio(
+        "Which contaminated well are you checking?",
+        options=list(well_options.keys()),
+        index=0
 )
 
 # Look up the actual well key (e.g., "BOM-25") from the label
-well_name = well_options[selected_label]
+    well_name = well_options[selected_label]
     # Big button
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
@@ -123,6 +123,11 @@ def show_results_page():
     cost_UV_per_min = st.sidebar.number_input("UV cost ($/min)", value=0.008, format="%.4f")
 
     run_button = st.sidebar.button("▶️ Run Simulation", type="primary", use_container_width=True)
+
+    st.sidebar.markdown("### 🔘 Carbon Treatment Parameters")
+    cost_gac_per_kg = st.sidebar.number_input("GAC Media Cost ($/kg)", value=5.50, step=0.50)
+    carbon_bed_mass_kg = st.sidebar.slider("Bed Carbon Mass (kg)", 100, 5000, 1000, 100)
+    flow_rate_gpm = st.sidebar.slider("Flow Rate (GPM)", 10.0, 500.0, 100.0, 10.0)
 
     # ─────────────────────────────────────────
     # MAIN PANEL CONTENT
@@ -279,12 +284,47 @@ def show_results_page():
                 fun=lambda t, y: photo_fenton_odes(t, y, Fe_total, k_f, k_r),
                 t_span=(0, 7200), y0=y0, method='BDF',
                 t_eval=t_eval, rtol=1e-8, atol=1e-12
+    
             )
 
         def time_to_target(sol, PFOA_0, target=90):
             removal = (1 - np.maximum(sol.y[2], 0) / PFOA_0) * 100
             idx = np.where(removal >= target)[0]
             return sol.t[idx[0]] / 60.0 if len(idx) > 0 else None
+
+        def run_carbon_simulation(C0_ng_l, gac_cost_kg, bed_mass_kg, flow_rate_gpm):
+            # Unit conversions
+            flow_rate_lpm = flow_rate_gpm * 3.78541
+            bed_mass_g = bed_mass_kg * 1000
+            C0_mg_l = C0_ng_l * 1e-6
+    
+            # Adsorption Capacity (Freundlich Isotherm)
+            K_F = 25.0
+            one_over_n = 0.5
+            q0_mg_g = K_F * (max(C0_mg_l, 1e-9) ** one_over_n)
+    
+            # Thomas Breakthrough Model
+            k_Th = 0.015
+            days = 180
+            t_eval_min = np.linspace(0, days * 24 * 60, 500)
+    
+            exponent = (k_Th * q0_mg_g * bed_mass_g / flow_rate_lpm) - (k_Th * C0_mg_l * t_eval_min)
+            C_t_ratio = 1.0 / (1.0 + np.exp(np.clip(exponent, -50, 50)))
+    
+            # Find breakthrough point (10% of influent concentration)
+            breakthrough_idx = np.where(C_t_ratio >= 0.10)[0]
+            days_to_breakthrough = t_eval_min[breakthrough_idx[0]] / (24 * 60) if len(breakthrough_idx) > 0 else days
+    
+            # Financials & Metrics
+            total_liters = (days_to_breakthrough * 24 * 60) * flow_rate_lpm
+            cost_per_liter = (bed_mass_kg * gac_cost_kg) / max(total_liters, 1.0)
+            avg_removal = (1.0 - np.mean(C_t_ratio[:max(1, len(breakthrough_idx))])) * 100
+    
+            return {
+                "cost_per_liter": cost_per_liter,
+                "avg_removal_pct": avg_removal,
+                "days_to_breakthrough": days_to_breakthrough
+            }
 
         PFOA_0 = user_PFOA * 1e-9 / MW_PFOA
         H2O2_mol = user_H2O2 * 1e-3
