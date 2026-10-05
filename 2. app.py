@@ -83,7 +83,7 @@ cost_UV_per_min    = st.sidebar.number_input("UV cost ($/min)", value=0.008, for
 run_button = st.sidebar.button("▶️ Run Simulation", type="primary", use_container_width=True)
 
 # ─────────────────────────────────────────
-# MODEL CONSTANTS (recalculated from inputs)
+# MODEL CONSTANTS & KINETICS
 # ─────────────────────────────────────────
 MW_PFOA  = 414.07
 T_REF    = 298.15
@@ -132,6 +132,8 @@ def run_simulation(H2O2_init, Fe_total, PFOA_0, k_f, k_r):
     return sol
 
 def time_to_target(sol, PFOA_0, target=90):
+    if PFOA_0 <= 0:
+        return 0.0
     removal = (1 - np.maximum(sol.y[2], 0) / PFOA_0) * 100
     idx = np.where(removal >= target)[0]
     return sol.t[idx[0]] / 60.0 if len(idx) > 0 else None
@@ -182,7 +184,7 @@ else:
 
     t_min      = sol.t / 60
     PFOA_t     = np.maximum(sol.y[2], 0)
-    removal    = (1 - PFOA_t / PFOA_0) * 100
+    removal    = (1 - PFOA_t / PFOA_0) * 100 if PFOA_0 > 0 else np.zeros_like(PFOA_t)
     final_rem  = removal[-1]
     t90        = time_to_target(sol, PFOA_0, 90)
     t99        = time_to_target(sol, PFOA_0, 99)
@@ -194,7 +196,7 @@ else:
     cost_iron  = Fe_mol   * 1000 * cost_Fe_per_mmol
     cost_uv    = t_for_cost * cost_UV_per_min
     cost_total = cost_h2o2 + cost_iron + cost_uv
-    cost_per_ug = cost_total / PFOA_removed_ug if PFOA_removed_ug > 0 else 999
+    cost_per_ug = cost_total / PFOA_removed_ug if PFOA_removed_ug > 0 else 0.0
 
     # ── KPI METRICS ──
     st.markdown("### 📊 Results")
@@ -206,7 +208,7 @@ else:
               "Within 2 hrs" if t90 else "Increase dose")
     m3.metric("Cost per Liter Treated", f"${cost_total:.4f}")
     m4.metric("Cost per µg PFOA Removed",
-              f"${cost_per_ug:.4f}" if cost_per_ug < 999 else "N/A")
+              f"${cost_per_ug:.4f}" if cost_per_ug > 0 else "N/A")
 
     st.divider()
 
@@ -238,7 +240,10 @@ else:
         ax2.set_ylabel('[PFOA] (pmol/L)')
         ax2.set_xlim(0, 120)
         ax2.grid(True, alpha=0.3)
-        ax2.set_title(f'Initial: {user_PFOA:.1f} ng/L → Final: {PFOA_t[-1]*MW_PFOA*1e12:.2f} pmol/L')
+        
+        # Fixed title unit conversion calculation
+        final_ng_l = PFOA_t[-1] * MW_PFOA * 1e9
+        ax2.set_title(f'Initial: {user_PFOA:.1f} ng/L → Final: {final_ng_l:.2f} ng/L')
         st.pyplot(fig2)
 
     # ── COST BREAKDOWN ──
