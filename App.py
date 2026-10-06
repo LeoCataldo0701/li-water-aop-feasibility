@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
 
+# Import your local well data module
+from well_data import BOMARC_WELLS, FIELD_CONDITIONS, get_well_data
+
 # ─────────────────────────────────────────
 # PAGE CONFIG
 # ─────────────────────────────────────────
@@ -21,7 +24,7 @@ st.title("💧 Long Island PFAS Treatment Optimizer")
 st.subheader("Photo-Fenton Advanced Oxidation Process Feasibility Model")
 st.caption(
     "Developed by Leo Cataldo | CUNY MEC Vittadello Lab | "
-    "Initial conditions: Finkelstein et al. 2025 USGS Suffolk County data"
+    "Initial conditions: Finkelstein et al. 2025 USGS & Suffolk County Dept. of Health Services"
 )
 st.warning(
     "⚠️ **Validation pending.** Rate constants are literature-derived (Hori et al. 2004; "
@@ -37,18 +40,28 @@ st.divider()
 st.sidebar.title("⚙️ Treatment Parameters")
 st.sidebar.markdown("Adjust conditions and click **Run Simulation**.")
 
-preset = st.sidebar.selectbox(
-    "📍 Load Preset Conditions",
-    ["Custom", "Suffolk County Field Conditions", "Lab Optimal (pH 3, 25°C)"]
+# ── WELL SELECTION & PRESETS ──
+mode = st.sidebar.selectbox(
+    "📍 Select Data Source",
+    ["Custom / Manual Input", "Suffolk County BOMARC Wells", "Lab Optimal (pH 3, 25°C)"]
 )
 
-if preset == "Suffolk County Field Conditions":
-    default_pH   = 5.83
-    default_temp = 12.9
+if mode == "Suffolk County BOMARC Wells":
+    selected_well_name = st.sidebar.selectbox("Choose Well Site", list(BOMARC_WELLS.keys()))
+    well_info = get_well_data(selected_well_name)
+    
+    default_pH   = FIELD_CONDITIONS["pH"]
+    default_temp = FIELD_CONDITIONS["temp_C"]
     default_H2O2 = 10.0
     default_Fe   = 100.0
-    default_PFOA = 7.75
-elif preset == "Lab Optimal (pH 3, 25°C)":
+    default_PFOA = float(well_info["level_ng_l"])
+    
+    st.sidebar.info(
+        f"**Site:** {well_info['location']}\n\n"
+        f"**Contaminant:** {well_info['contaminant']} ({well_info['level_ng_l']} ng/L)\n\n"
+        f"**Safe Limit:** {well_info['safe_limit_ng_l']} ng/L"
+    )
+elif mode == "Lab Optimal (pH 3, 25°C)":
     default_pH   = 3.0
     default_temp = 25.0
     default_H2O2 = 10.0
@@ -66,8 +79,8 @@ user_pH   = st.sidebar.slider("pH", 3.0, 8.0, default_pH, 0.1,
                                help="Optimal Photo-Fenton pH is 3–4. Suffolk County avg: 5.83")
 user_temp = st.sidebar.slider("Temperature (°C)", 5.0, 35.0, default_temp, 0.5,
                                help="Suffolk County groundwater avg: 12.9°C")
-user_PFOA = st.sidebar.slider("Initial PFOA (ng/L)", 1.0, 50.0, default_PFOA, 0.5,
-                               help="Suffolk County range: 3.8–13 ng/L (Finkelstein et al. 2025)")
+user_PFOA = st.sidebar.slider("Initial Concentration (ng/L)", 1.0, 150.0, default_PFOA, 0.5,
+                               help="Initial contaminant concentration from well data or custom input")
 
 st.sidebar.markdown("### 🧪 Reagent Doses")
 user_H2O2 = st.sidebar.slider("H₂O₂ Dose (mM)", 1.0, 100.0, default_H2O2, 1.0,
@@ -151,23 +164,14 @@ if not run_button:
 
     st.markdown("### About This Tool")
     st.markdown("""
-    This model simulates **Photo-Fenton Advanced Oxidation** for PFAS (PFOA) degradation
-    in Long Island groundwater. It uses a system of ordinary differential equations (ODEs)
-    to predict hydroxyl radical (·OH) generation and PFOA breakdown over time.
+    This model simulates **Photo-Fenton Advanced Oxidation** for PFAS degradation
+    in Long Island groundwater using real well data from the Suffolk County Department of Health Services and USGS.
 
     **Key features:**
-    - Real Suffolk County field conditions from USGS data (Finkelstein et al. 2025)
+    - Real BOMARC and municipal well contamination records (`well_data.py`)
     - Temperature and pH corrections to Fenton kinetics (De Laat & Gallard 1999)
     - Cost analysis per liter treated
-    - Comparison across H₂O₂ dose scenarios
-
-    **Why Photo-Fenton for PFAS?**  
-    Carbon adsorption — the standard treatment — fails for ultra-short chain PFAS variants.
-    Photo-Fenton AOP is a candidate alternative, particularly for these recalcitrant compounds.
-    This tool screens feasibility before costly bench-scale experiments.
-
-    **Data source:** Finkelstein et al. 2025, USGS Suffolk County NY groundwater PFAS survey.  
-    **GitHub:** [LeoCataldo0701/li-water-aop-feasibility](https://github.com/LeoCataldo0701/li-water-aop-feasibility)
+    - Feasibility screening for municipal water systems
     """)
 
 # ─────────────────────────────────────────
@@ -187,7 +191,6 @@ else:
     removal    = (1 - PFOA_t / PFOA_0) * 100 if PFOA_0 > 0 else np.zeros_like(PFOA_t)
     final_rem  = removal[-1]
     t90        = time_to_target(sol, PFOA_0, 90)
-    t99        = time_to_target(sol, PFOA_0, 99)
 
     # Cost calculation
     PFOA_removed_ug = (PFOA_0 - PFOA_t[-1]) * MW_PFOA * 1e6
@@ -201,13 +204,13 @@ else:
     # ── KPI METRICS ──
     st.markdown("### 📊 Results")
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Final PFOA Removal", f"{final_rem:.1f}%",
+    m1.metric("Final Contaminant Removal", f"{final_rem:.1f}%",
               "✅ Above 90%" if final_rem >= 90 else "❌ Below 90%")
     m2.metric("Time to 90% Removal",
               f"{t90:.1f} min" if t90 else "Not reached",
               "Within 2 hrs" if t90 else "Increase dose")
     m3.metric("Cost per Liter Treated", f"${cost_total:.4f}")
-    m4.metric("Cost per µg PFOA Removed",
+    m4.metric("Cost per µg Removed",
               f"${cost_per_ug:.4f}" if cost_per_ug > 0 else "N/A")
 
     st.divider()
@@ -216,7 +219,7 @@ else:
     col_left, col_right = st.columns(2)
 
     with col_left:
-        st.markdown("#### PFOA Removal Over Time")
+        st.markdown("#### Removal Over Time")
         fig1, ax1 = plt.subplots(figsize=(6, 4))
         ax1.plot(t_min, removal, color='#2196F3', linewidth=2.5)
         ax1.axhline(90, color='gray', linestyle='--', alpha=0.6, label='90% target')
@@ -225,7 +228,7 @@ else:
             ax1.axvline(t90, color='green', linestyle='--', alpha=0.5,
                         label=f't₉₀ = {t90:.1f} min')
         ax1.set_xlabel('Time (min)')
-        ax1.set_ylabel('PFOA Removal (%)')
+        ax1.set_ylabel('Removal (%)')
         ax1.set_ylim(0, 105)
         ax1.set_xlim(0, 120)
         ax1.legend(fontsize=8)
@@ -233,15 +236,14 @@ else:
         st.pyplot(fig1)
 
     with col_right:
-        st.markdown("#### PFOA Concentration Over Time")
+        st.markdown("#### Concentration Over Time")
         fig2, ax2 = plt.subplots(figsize=(6, 4))
         ax2.plot(t_min, PFOA_t * 1e12, color='#F44336', linewidth=2.5)
         ax2.set_xlabel('Time (min)')
-        ax2.set_ylabel('[PFOA] (pmol/L)')
+        ax2.set_ylabel('Concentration (pmol/L)')
         ax2.set_xlim(0, 120)
         ax2.grid(True, alpha=0.3)
         
-        # Fixed title unit conversion calculation
         final_ng_l = PFOA_t[-1] * MW_PFOA * 1e9
         ax2.set_title(f'Initial: {user_PFOA:.1f} ng/L → Final: {final_ng_l:.2f} ng/L')
         st.pyplot(fig2)
@@ -264,14 +266,13 @@ else:
     |---|---|
     | pH | {user_pH} |
     | Temperature | {user_temp}°C |
-    | PFOA₀ | {user_PFOA} ng/L ({PFOA_0:.3e} mol/L) |
+    | Initial Concentration | {user_PFOA} ng/L ({PFOA_0:.3e} mol/L) |
     | H₂O₂ dose | {user_H2O2} mM |
     | Fe²⁺ dose | {user_Fe} µM |
     | Arrhenius factor | {arr_factor:.3f} |
     | pH correction | {pH_cor:.4f} |
     | k_f (corrected) | {k_f:.4f} L/(mol·s) |
-    | Rate constants source | Hori et al. 2004; De Laat & Gallard 1999 |
-    | Field data source | Finkelstein et al. 2025, USGS |
+    | Data Sources | Suffolk County Dept. of Health Services & USGS |
     """)
 
     st.caption("⚠️ Validation pending. Results are theoretical — experimental confirmation required before use in treatment planning.")
