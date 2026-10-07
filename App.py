@@ -16,13 +16,6 @@ st.set_page_config(
     page_icon="💧",
     layout="wide"
 )
-# Initialize session state for page navigation
-if "page" not in st.session_state:
-    st.session_state.page = "landing"
-
-# Add navigation tabs at top
-st.markdown("---")
-tab1, tab2, tab3, tab4 = st.tabs(["🏠 Home", "📊 Simulation", "⚡ Comparison", "📧 Action"])
 
 # ─────────────────────────────────────────
 # HEADER
@@ -42,65 +35,74 @@ st.warning(
 st.divider()
 
 # ─────────────────────────────────────────
-# SIDEBAR — INPUTS
+# SIDEBAR NAVIGATION
 # ─────────────────────────────────────────
-st.sidebar.title("⚙️ Treatment Parameters")
-st.sidebar.markdown("Adjust conditions and click **Run Simulation**.")
-
-# ── WELL SELECTION & PRESETS ──
-mode = st.sidebar.selectbox(
-    "📍 Select Data Source",
-    ["Custom / Manual Input", "Suffolk County BOMARC Wells", "Lab Optimal (pH 3, 25°C)"]
+st.sidebar.title("🧭 Navigation")
+page = st.sidebar.radio(
+    "Select Screen",
+    ["🏠 Home & Overview", "📊 Simulation Optimizer", "⚡ Treatment Comparison", "📧 Action & Private Well Portal"]
 )
 
-if mode == "Suffolk County BOMARC Wells":
-    selected_well_name = st.sidebar.selectbox("Choose Well Site", list(BOMARC_WELLS.keys()))
-    well_info = get_well_data(selected_well_name)
+# ─────────────────────────────────────────
+# DYNAMIC SIDEBAR INPUTS (Only shown on relevant screens)
+# ─────────────────────────────────────────
+# Initialize default values so variables exist globally
+default_pH, default_temp, default_H2O2, default_Fe, default_PFOA = 5.83, 12.9, 10.0, 100.0, 7.75
+cost_H2O2_per_mmol, cost_Fe_per_mmol, cost_UV_per_min = 0.014, 0.0557, 0.008
+run_button = False
+
+if page == "📊 Simulation Optimizer":
+    st.sidebar.markdown("---")
+    st.sidebar.title("⚙️ Treatment Parameters")
     
-    default_pH   = FIELD_CONDITIONS["pH"]
-    default_temp = FIELD_CONDITIONS["temp_C"]
-    default_H2O2 = 10.0
-    default_Fe   = 100.0
-    default_PFOA = float(well_info["level_ng_l"])
-    
-    st.sidebar.info(
-        f"**Site:** {well_info['location']}\n\n"
-        f"**Contaminant:** {well_info['contaminant']} ({well_info['level_ng_l']} ng/L)\n\n"
-        f"**Safe Limit:** {well_info['safe_limit_ng_l']} ng/L"
+    mode = st.sidebar.selectbox(
+        "📍 Select Data Source",
+        ["Custom / Manual Input", "Suffolk County BOMARC Wells", "Lab Optimal (pH 3, 25°C)"]
     )
-elif mode == "Lab Optimal (pH 3, 25°C)":
-    default_pH   = 3.0
-    default_temp = 25.0
-    default_H2O2 = 10.0
-    default_Fe   = 100.0
-    default_PFOA = 7.75
-else:
-    default_pH   = 5.83
-    default_temp = 12.9
-    default_H2O2 = 10.0
-    default_Fe   = 100.0
-    default_PFOA = 7.75
 
-st.sidebar.markdown("### 🌍 Field Conditions")
-user_pH   = st.sidebar.slider("pH", 3.0, 8.0, default_pH, 0.1,
-                               help="Optimal Photo-Fenton pH is 3–4. Suffolk County avg: 5.83")
-user_temp = st.sidebar.slider("Temperature (°C)", 5.0, 35.0, default_temp, 0.5,
-                               help="Suffolk County groundwater avg: 12.9°C")
-user_PFOA = st.sidebar.slider("Initial Concentration (ng/L)", 1.0, 150.0, default_PFOA, 0.5,
-                               help="Initial contaminant concentration from well data or custom input")
+    if mode == "Suffolk County BOMARC Wells":
+        selected_well_name = st.sidebar.selectbox("Choose Well Site", list(BOMARC_WELLS.keys()))
+        well_info = get_well_data(selected_well_name)
+        
+        default_pH   = FIELD_CONDITIONS["pH"]
+        default_temp = FIELD_CONDITIONS["temp_C"]
+        default_H2O2 = 10.0
+        default_Fe   = 100.0
+        default_PFOA = float(well_info["level_ng_l"])
+        
+        st.sidebar.info(
+            f"**Site:** {well_info['location']}\n\n"
+            f"**Contaminant:** {well_info['contaminant']} ({well_info['level_ng_l']} ng/L)\n\n"
+            f"**Safe Limit:** {well_info['safe_limit_ng_l']} ng/L"
+        )
+    elif mode == "Lab Optimal (pH 3, 25°C)":
+        default_pH   = 3.0
+        default_temp = 25.0
+        default_H2O2 = 10.0
+        default_Fe   = 100.0
+        default_PFOA = 7.75
+    else:
+        default_pH   = 5.83
+        default_temp = 12.9
+        default_H2O2 = 10.0
+        default_Fe   = 100.0
+        default_PFOA = 7.75
 
-st.sidebar.markdown("### 🧪 Reagent Doses")
-user_H2O2 = st.sidebar.slider("H₂O₂ Dose (mM)", 1.0, 100.0, default_H2O2, 1.0,
-                               help="Typical municipal range: 5–50 mM")
-user_Fe   = st.sidebar.slider("Fe²⁺ Dose (µM)", 1.0, 5000.0, default_Fe, 10.0,
-                               help="Optimal Fe varies by H₂O₂ dose and pH")
+    st.sidebar.markdown("### 🌍 Field Conditions")
+    user_pH   = st.sidebar.slider("pH", 3.0, 8.0, default_pH, 0.1)
+    user_temp = st.sidebar.slider("Temperature (°C)", 5.0, 35.0, default_temp, 0.5)
+    user_PFOA = st.sidebar.slider("Initial Concentration (ng/L)", 1.0, 150.0, default_PFOA, 0.5)
 
-st.sidebar.markdown("### 💰 Cost Parameters")
-cost_H2O2_per_mmol = st.sidebar.number_input("H₂O₂ cost ($/mmol)", value=0.014, format="%.4f")
-cost_Fe_per_mmol   = st.sidebar.number_input("Fe²⁺ cost ($/mmol)", value=0.0557, format="%.4f")
-cost_UV_per_min    = st.sidebar.number_input("UV cost ($/min)", value=0.008, format="%.4f")
+    st.sidebar.markdown("### 🧪 Reagent Doses")
+    user_H2O2 = st.sidebar.slider("H₂O₂ Dose (mM)", 1.0, 100.0, default_H2O2, 1.0)
+    user_Fe   = st.sidebar.slider("Fe²⁺ Dose (µM)", 1.0, 5000.0, default_Fe, 10.0)
 
-run_button = st.sidebar.button("▶️ Run Simulation", type="primary", use_container_width=True)
+    st.sidebar.markdown("### 💰 Cost Parameters")
+    cost_H2O2_per_mmol = st.sidebar.number_input("H₂O₂ cost ($/mmol)", value=0.014, format="%.4f")
+    cost_Fe_per_mmol   = st.sidebar.number_input("Fe²⁺ cost ($/mmol)", value=0.0557, format="%.4f")
+    cost_UV_per_min    = st.sidebar.number_input("UV cost ($/min)", value=0.008, format="%.4f")
+
+    run_button = st.sidebar.button("▶️ Run Simulation", type="primary", use_container_width=True)
 
 # ─────────────────────────────────────────
 # MODEL CONSTANTS & KINETICS
@@ -110,12 +112,12 @@ T_REF    = 298.15
 Ea_J     = 50_000
 R_gas    = 8.314
 
-k_PFOA      = 1.2e7
-k_I         = 3e8
-k_s         = 2e4
+k_PFOA     = 1.2e7
+k_I        = 3e8
+k_s        = 2e4
 k_H2O2_scav = 2.7e7
-k_Fe        = 4.3e8
-k_hv_Fe     = 3.5e-4
+k_Fe       = 4.3e8
+k_hv_Fe    = 3.5e-4
 k_hv_h2o2   = 6.6e-6
 
 def build_rate_constants(pH, temp_C):
@@ -129,7 +131,7 @@ def build_rate_constants(pH, temp_C):
 def photo_fenton_odes(t, y, Fe_total, k_f, k_r):
     H2O2, OH, PFOA, I, Fe2, Fe3 = [max(v, 0) for v in y]
     dH2O2 = (-k_hv_h2o2 * H2O2 - k_H2O2_scav * OH * H2O2
-              - k_f * Fe2 * H2O2 - k_r * Fe3 * H2O2)
+             - k_f * Fe2 * H2O2 - k_r * Fe3 * H2O2)
     dOH   = (2 * k_hv_h2o2 * H2O2 + k_f * Fe2 * H2O2
              - k_PFOA * OH * PFOA - k_I * OH * I
              - k_s * OH - k_H2O2_scav * OH * H2O2
@@ -159,14 +161,16 @@ def time_to_target(sol, PFOA_0, target=90):
     return sol.t[idx[0]] / 60.0 if len(idx) > 0 else None
 
 # ─────────────────────────────────────────
-# MAIN PANEL — DEFAULT STATE
+# PAGE ROUTING
 # ─────────────────────────────────────────
-with tab1:
-    st.info("👈 Set your parameters in the sidebar and click **Run Simulation** to begin.")
+
+if page == "🏠 Home & Overview":
+    st.info("👈 Use the sidebar navigation menu to explore simulations, treatability comparisons, and action tools.")
     col1, col2, col3 = st.columns(3)
     col1.metric("Suffolk County PFOA (avg)", "7.75 ng/L", "USGS 2021-2023")
     col2.metric("Groundwater pH (avg)", "5.83", "Range: 5.5–6.2")
     col3.metric("Groundwater Temp (avg)", "12.9°C", "Range: 12.1–14.6°C")
+    
     st.markdown("### About This Tool")
     st.markdown("""
     This model simulates **Photo-Fenton Advanced Oxidation** for PFAS degradation
@@ -176,12 +180,12 @@ with tab1:
     - Real BOMARC and municipal well contamination records
     - Temperature and pH corrections to Fenton kinetics
     - Cost analysis per liter treated
-    - Feasibility screening for municipal water systems
+    - Dedicated private well reporting portal for unsewered sectors
     """)
 
-with tab2:
+elif page == "📊 Simulation Optimizer":
     if not run_button:
-        st.info("Set parameters in sidebar → Click 'Run Simulation'")
+        st.info("👈 Adjust your parameters in the sidebar and click **Run Simulation**.")
     else:
         PFOA_0   = user_PFOA * 1e-9 / MW_PFOA
         H2O2_mol = user_H2O2 * 1e-3
@@ -248,103 +252,80 @@ with tab2:
             ax2.grid(True, alpha=0.3)
             
             final_ng_l = PFOA_t[-1] * MW_PFOA * 1e9
-            ax2.set_title(f'Initial: {user_PFOA:.1f} ng/L → Final: {final_ng_l:.2f} ng/L')
+            ax2.set_title(f'Initial: {default_PFOA:.1f} ng/L → Final: {final_ng_l:.2f} ng/L')
             st.pyplot(fig2)
 
-        st.markdown("#### 💰 Cost Breakdown (per liter treated)")
-        c1, c2, c3, c4 = st.columns(4)
-        c1.metric("H₂O₂ Cost", f"${cost_h2o2:.4f}")
-        c2.metric("Fe²⁺ Cost",  f"${cost_iron:.4f}")
-        c3.metric("UV Cost",    f"${cost_uv:.4f}")
-        c4.metric("Total",      f"${cost_total:.4f}")
+elif page == "⚡ Treatment Comparison":
+    st.markdown("### ⚡ Granular Activated Carbon (GAC) vs. Photo-Fenton AOP")
+    st.markdown("Compare operational parameters, removal efficiencies, and economic feasibility.")
 
-        st.divider()
-        st.markdown("#### 🔬 Conditions Used in This Run")
-        arr_factor = np.exp(-Ea_J / R_gas * (1/(user_temp+273.15) - 1/T_REF))
-        pH_cor     = 10 ** (-(user_pH - 3.0) * 0.5)
-        st.markdown(f"""
-        | Parameter | Value |
-        |---|---|
-        | pH | {user_pH} |
-        | Temperature | {user_temp}°C |
-        | Initial Concentration | {user_PFOA} ng/L ({PFOA_0:.3e} mol/L) |
-        | H₂O₂ dose | {user_H2O2} mM |
-        | Fe²⁺ dose | {user_Fe} µM |
-        | Arrhenius factor | {arr_factor:.3f} |
-        | pH correction | {pH_cor:.4f} |
-        | k_f (corrected) | {k_f:.4f} L/(mol·s) |
-        | Data Sources | Suffolk County Dept. of Health Services & USGS |
-        """)
+    col_gac, col_aop = st.columns(2)
 
-        st.caption("⚠️ Validation pending. Results are theoretical — experimental confirmation required before use in treatment planning.")
+    with col_gac:
+        st.subheader("🔘 Granular Activated Carbon (GAC)")
+        gac_ebct = st.slider("GAC Bed Contact Time (EBCT in min)", 5.0, 30.0, 15.0, 1.0)
+        gac_cost_lb = st.number_input("Carbon media cost ($/lb)", value=2.25)
+        st.metric("Estimated Removal Efficiency", "75% - 85%", "Struggles with ultra-short chains")
+        st.metric("Media Spent Frequency", "High (Requires disposal)")
 
-with tab3:
-    st.markdown("### ⚡ Treatment Comparison")
-    st.markdown("**Photo-Fenton vs. Carbon Adsorption**")
-    
-    col_left, col_right = st.columns(2)
-    
-    with col_left:
-        st.subheader("🔘 Carbon Adsorption")
-        st.metric("Removal", "75%")
-        st.metric("Time", "20 min")
-        st.metric("Cost/Liter", "$0.25")
-        st.markdown("**Pros:** Proven, lower cost\n**Cons:** Less effective on PFNA")
-    
-    with col_right:
-        st.subheader("⚡ Photo-Fenton")
-        st.metric("Removal", "90%")
-        st.metric("Time", "45 min")
-        st.metric("Cost/Liter", "$0.35")
-        st.markdown("**Pros:** Handles all PFAS\n**Cons:** Higher cost")
-    
+    with col_aop:
+        st.subheader("⚡ Photo-Fenton AOP")
+        st.metric("Estimated Removal Efficiency", "90%+", "Destroys molecular structure")
+        st.metric("Destruction Speed", "45–60 min batch/flow")
+        st.metric("Byproduct Management", "Mineralized end-products")
+
+    # Comparison Bar Chart
     fig, ax = plt.subplots(figsize=(8, 4))
-    treatments = ["Carbon", "Photo-Fenton"]
-    removals = [75, 90]
+    treatments = ["GAC Adsorption", "Photo-Fenton AOP"]
+    removals = [80, 92]
     colors = ["#FFA500", "#4CAF50"]
-    
     bars = ax.bar(treatments, removals, color=colors, alpha=0.8)
-    ax.set_ylabel("Removal %", fontweight="bold")
+    ax.set_ylabel("Expected Efficacy %", fontweight="bold")
     ax.set_ylim(0, 105)
-    ax.axhline(80, color="red", linestyle="--", label="80% threshold")
-    ax.legend()
     ax.grid(True, alpha=0.3)
     for bar in bars:
-        height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width()/2., height,
-                f'{int(height)}%',
-                ha='center', va='bottom', fontweight='bold')
+        h = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., h, f'{h}%', ha='center', va='bottom', fontweight='bold')
     st.pyplot(fig)
 
-with tab4:
-    st.markdown("### 📧 Take Action")
-    
-    town = st.text_input("Your town", "Westhampton")
-    official_name = st.text_input("Official name", "Town Board")
-    official_email = st.text_input("Official email", "")
-    
-    email_body = f"""Subject: URGENT: PFAS Contamination — {town}
+elif page == "📧 Action & Private Well Portal":
+    st.markdown("### 🚨 Private Well Contamination Action & Reporting Portal")
+    st.markdown("""
+    *Private wells in unsewered sectors of Long Island frequently fly under municipal radar.* 
+    Use this customized reporting generator to draft a formal notification packet for local health officials and town supervisors.
+    """)
+
+    with st.form("private_well_form"):
+        c1, c2 = st.columns(2)
+        with c1:
+            resident_name = st.text_input("Property Owner / Resident Name", "Jane Doe")
+            property_address = st.text_input("Property Address / Town", "Westhampton, NY 11977")
+            well_depth = st.number_input("Well Depth (ft)", value=65)
+        with c2:
+            official_name = st.text_input("Town Official / Health Dept Contact", "Town Supervisor / SCDHS Rep")
+            official_email = st.text_input("Official Email Address", "waterquality@suffolkcountyny.gov")
+            detected_pfoa = st.number_input("Detected PFOA/PFOS Level (ng/L)", value=85.0)
+
+        submitted = st.form_submit_button("Generate Formal Advocacy Notification Draft")
+
+    if submitted:
+        st.success("✅ Formal Notification Packet Generated!")
+        letter_draft = f"""SUBJECT: URGENT: Private Drinking Well PFAS Detection - {property_address}
 
 Dear {official_name},
 
-I am writing about PFAS contamination detected in {town} groundwater:
+I am writing to formally report elevated PFAS contamination detected at a private well location in {property_address}. 
 
-BOMARC Site:
-- PFOA: 100 ng/L (10x safe limit)
-- PFOS: 120 ng/L (12x safe limit)
+Because private wells lack the routine municipal testing oversight of public water districts, this location requires immediate official awareness and technical verification.
 
-Treatment options available:
-1. Carbon Adsorption: 75% removal, 20 min, $0.25/L
-2. Photo-Fenton AOP: 90% removal, 45 min, $0.35/L
+- Resident / Owner: {resident_name}
+- Well Depth: {well_depth} ft
+- Detected Concentration: {detected_pfoa} ng/L (Exceeding NYS / EPA health guidelines)
 
-Please acknowledge this data and hold a public meeting within 30 days to discuss remediation timeline and budget.
+We request confirmation sampling by the Suffolk County Department of Health Services and technical guidance on advanced mitigation options (such as GAC or Photo-Fenton treatment systems).
 
 Sincerely,
-[Your Name]
+{resident_name}
+{property_address}
 """
-    
-    st.text_area("Email to send:", email_body, height=300, disabled=True)
-    
-    if st.button("📋 Copy Email"):
-        st.success("✅ Email copied! Paste into your email client.")
-        st.code(email_body)
+        st.text_area("Copy and paste this official notification draft:", letter_draft, height=280)
