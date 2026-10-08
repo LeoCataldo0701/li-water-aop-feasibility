@@ -157,25 +157,31 @@ elif page == "📊 Simulation & Treatment Comparison":
         fenton_cost_per_ug = fenton_total_cost / fenton_removed_ug if fenton_removed_ug > 0 else 0.0
 
 # GAC Modeling Calculation (Realistic constraints: efficiency ceiling, short-chain breakthrough, disposal liability)
-        gac_max_rem = max(65.0, 85.0 - (gac_ebct * 0.2))  
-        gac_total_cost = (gac_cost_lb + gac_disposal_cost) * (0.025 * (15.0 / max(5.0, gac_ebct))) 
+ gac_max_rem = max(65.0, 85.0 - (gac_ebct * 0.2))  
+        gac_total_cost = (gac_cost_lb + gac_disposal_cost) * (0.025 * (15.0 / max(5.0, gac_ebct)))
+        
+        gac_removed_ug = (PFOA_0 * (gac_max_rem / 100.0)) * MW_PFOA * 1e6
+        gac_cost_per_ug = gac_total_cost / gac_removed_ug if gac_removed_ug > 0 else 0.0
 
-        st.markdown("### 📊 Side-by-Side Treatment Comparison: Destruction vs. Adsorption")
+        st.markdown("### 📊 Side-by-Side Treatment Comparison: Cost & Efficiency")
         
         col1, col2 = st.columns(2)
         with col1:
             st.metric("⚡ Photo-Fenton (Destructive AOP)", f"{fenton_max_rem:.1f}% Removal", f"Time to Target: {fenton_t_target:.1f} min")
+            st.metric("Photo-Fenton Cost / Liter", f"${fenton_total_cost:.4f}")
+            st.metric("Cost per µg PFOA Destroyed", f"${fenton_cost_per_ug:.4f}" if fenton_cost_per_ug > 0 else "N/A")
             st.markdown("""
-            * **Mechanism:** Complete mineralization (destroys bonds)
+            * **Mechanism:** Complete mineralization
             * **Waste Stream:** None (benign end-products)
-            * **Short-Chains:** Handled effectively
             """)
+            
         with col2:
             st.metric("🔘 GAC Adsorption (Phase Transfer)", f"{gac_max_rem:.1f}% Removal (Ceiling)", f"EBCT: {gac_ebct} min")
+            st.metric("GAC Cost / Liter", f"${gac_total_cost:.4f}")
+            st.metric("Cost per µg PFOA Captured", f"${gac_cost_per_ug:.4f}" if gac_cost_per_ug > 0 else "N/A")
             st.markdown("""
             * **Mechanism:** Phase transfer (traps contaminants)
-            * **Waste Stream:** Spent hazardous carbon media requiring disposal/regeneration
-            * **Short-Chains:** Prone to early breakthrough
+            * **Waste Stream:** Spent hazardous carbon media requiring disposal
             """)
 
         st.divider()
