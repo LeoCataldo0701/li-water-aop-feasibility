@@ -156,20 +156,27 @@ elif page == "📊 Simulation & Treatment Comparison":
         fenton_total_cost = cost_h2o2 + cost_iron + cost_uv
         fenton_cost_per_ug = fenton_total_cost / fenton_removed_ug if fenton_removed_ug > 0 else 0.0
 
-        # GAC Modeling Calculation (Simulated empirical adsorption curve based on EBCT)
-        gac_max_rem = min(92.0, 70.0 + (gac_ebct * 0.7)) # Efficacy scales slightly with EBCT up to a ceiling
-        gac_breakthrough_time = gac_ebct * 2.5 # Approximate contact/bed volume factor
-        gac_total_cost = (gac_cost_lb + gac_disposal_cost) * (0.012 * (gac_ebct / 15.0)) # Normalized cost per liter factor
+# GAC Modeling Calculation (Realistic constraints: efficiency ceiling, short-chain breakthrough, disposal liability)
+        gac_max_rem = max(65.0, 85.0 - (gac_ebct * 0.2))  
+        gac_total_cost = (gac_cost_lb + gac_disposal_cost) * (0.025 * (15.0 / max(5.0, gac_ebct))) 
 
-        st.markdown("### 📊 Side-by-Side Treatment Comparison")
+        st.markdown("### 📊 Side-by-Side Treatment Comparison: Destruction vs. Adsorption")
         
         col1, col2 = st.columns(2)
         with col1:
-            st.metric("⚡ Photo-Fenton Max Removal", f"{fenton_max_rem:.1f}%", f"Time to 90%: {fenton_t_target:.1f} min")
-            st.metric("⚡ Photo-Fenton Cost / Liter", f"${fenton_total_cost:.4f}")
+            st.metric("⚡ Photo-Fenton (Destructive AOP)", f"{fenton_max_rem:.1f}% Removal", f"Time to Target: {fenton_t_target:.1f} min")
+            st.markdown("""
+            * **Mechanism:** Complete mineralization (destroys bonds)
+            * **Waste Stream:** None (benign end-products)
+            * **Short-Chains:** Handled effectively
+            """)
         with col2:
-            st.metric("🔘 GAC Adsorption Max Removal", f"{gac_max_rem:.1f}%", f"EBCT: {gac_ebct} min")
-            st.metric("🔘 GAC Estimated Cost / Liter", f"${gac_total_cost:.4f}")
+            st.metric("🔘 GAC Adsorption (Phase Transfer)", f"{gac_max_rem:.1f}% Removal (Ceiling)", f"EBCT: {gac_ebct} min")
+            st.markdown("""
+            * **Mechanism:** Phase transfer (traps contaminants)
+            * **Waste Stream:** Spent hazardous carbon media requiring disposal/regeneration
+            * **Short-Chains:** Prone to early breakthrough
+            """)
 
         st.divider()
 
