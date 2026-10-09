@@ -3,103 +3,138 @@
 
 BOMARC_WELLS = {
     "BOM-25": {
-        "contaminant": "PFOA",
-        "level_ng_l": 100,
-        "safe_limit_ng_l": 10,
         "location": "BOMARC Site, Westhampton",
+        "compounds": { 
+            "PFOA" : 100,
+            "PFOS" : 27,
+            "PFNA" : 8
+        },
+        "safe_limit_ng_l": 10,
         "date": "2024 Investigation",
         "source": "Suffolk County Dept. of Health Services"
     },
     "BOM-26": {
-        "contaminant": "PFOA",
-        "level_ng_l": 99,
-        "safe_limit_ng_l": 10,
         "location": "BOMARC Site, Westhampton",
+        "compounds": { 
+            "PFOA" : 27,
+            "PFOS" : 120,
+            "PFNA" : 99
+        },
+        "safe_limit_ng_l": 10,
         "date": "2024 Investigation",
         "source": "Suffolk County Dept. of Health Services"
     },
     "Pines MWG-2": {
-        "contaminant": "PFOA",
-        "level_ng_l": 64,
-        "safe_limit_ng_l": 10,
         "location": "Drinking Water Wellhead",
+        "compounds": { 
+            "PFOA" : 27,
+            "PFOS" : 120,
+            "PFNA" : 99
+        },
+        "safe_limit_ng_l": 10,
         "date": "2024 Investigation",
         "source": "Suffolk County Dept. of Health Services"
     
   },
     "BOM-7": {
-        "contaminant": "PFOS",
-        "level_ng_l": 13,
+      "location": "BOMARC Site, Westhampton",
+        "compounds": { 
+            "PFOA" : 13,
+            "PFOS" : 1.4,
+            "PFNA" : .93
+        },
         "safe_limit_ng_l": 10,
-        "location": "BOMARC Site, Westhampton",
         "date": "2024 Investigation",
         "source": "Suffolk County Dept. of Health Services"
-  
-  },
+    },
     "BOM-11": {
-        "contaminant": "PFOS",
-        "level_ng_l": 11,
+       "location": "BOMARC Site, Westhampton",
+        "compounds": { 
+            "PFOA" : 11,
+            "PFOS" : 2,
+            "PFNA" : 1.8
+        },
         "safe_limit_ng_l": 10,
-        "location": "BOMARC Site, Westhampton",
         "date": "2024 Investigation",
         "source": "Suffolk County Dept. of Health Services"
     },
       "BOM-17": {
-        "contaminant": "PFOS",
-        "level_ng_l": 13,
+         "location": "BOMARC Site, Westhampton",
+         "compounds": { 
+             "PFOA" : 99,
+             "PFOS" : .73,
+             "PFNA" : 1.8
+        },
         "safe_limit_ng_l": 10,
-        "location": "BOMARC Site, Westhampton",
         "date": "2024 Investigation",
         "source": "Suffolk County Dept. of Health Services"
     },
       "BOM-19": {
-        "contaminant": "PFOS",
-        "level_ng_l": 15,
+         "location": "BOMARC Site, Westhampton",
+         "compounds": { 
+             "PFOA" : 15,
+             "PFOS" : 39,
+             "PFNA" : 1.8
+        },
         "safe_limit_ng_l": 10,
-        "location": "BOMARC Site, Westhampton",
         "date": "2024 Investigation",
         "source": "Suffolk County Dept. of Health Services"
     },
       "BOM-21": {
-        "contaminant": "PFOS",
-        "level_ng_l": 21,
+         "location": "BOMARC Site, Westhampton",
+         "compounds": { 
+             "PFOA" : 21,
+             "PFOS" : 4.2,
+             "PFNA" : .36
+        },
         "safe_limit_ng_l": 10,
-        "location": "BOMARC Site, Westhampton",
         "date": "2024 Investigation",
         "source": "Suffolk County Dept. of Health Services"
     },
       "BOM-22": {
-        "contaminant": "PFOS",
-        "level_ng_l": 13,
+         "location": "BOMARC Site, Westhampton",
+         "compounds": { 
+             "PFOA" : 13,
+             "PFOS" : 13,
+             "PFNA" : 1.3
+        },
         "safe_limit_ng_l": 10,
-        "location": "BOMARC Site, Westhampton",
         "date": "2024 Investigation",
         "source": "Suffolk County Dept. of Health Services"
     },
       "BOM-23": {
-        "contaminant": "PFOS",
-        "level_ng_l": 10,
+         "location": "BOMARC Site, Westhampton",
+         "compounds": { 
+             "PFOA" : 10,
+             "PFOS" : 13,
+             "PFNA" : 2
+        },
         "safe_limit_ng_l": 10,
-        "location": "BOMARC Site, Westhampton",
         "date": "2024 Investigation",
         "source": "Suffolk County Dept. of Health Services"
     },
       "BOM-24": {
-        "contaminant": "PFOS",
-        "level_ng_l": 22,
+       "location": "BOMARC Site, Westhampton",
+       "compounds": { 
+           "PFOA" : 22,
+           "PFOS" : 36,
+           "PFNA" : 45
+        },
         "safe_limit_ng_l": 10,
-        "location": "BOMARC Site, Westhampton",
         "date": "2024 Investigation",
         "source": "Suffolk County Dept. of Health Services"
     },
       "BOM-28": {
-        "contaminant": "PFOS",
-        "level_ng_l": 10,
+         "location": "BOMARC Site, Westhampton",
+         "compounds": { 
+             "PFOA" : 10,
+             "PFOS" : 3.7,
+             "PFNA" : .56
+        },
         "safe_limit_ng_l": 10,
-        "location": "BOMARC Site, Westhampton",
         "date": "2024 Investigation",
         "source": "Suffolk County Dept. of Health Services"
-    }
+    },
 }
 
 # Fixed field conditions (real Suffolk County groundwater)
