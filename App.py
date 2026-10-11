@@ -251,7 +251,7 @@ if page == "🏠 Crisis Overview":
 
     for i, (col, well) in enumerate(zip(cols, wells)):
         with col:
-            mult = well["level_ng_l"] / well["safe_limit_ng_l"]
+            mult = well["level_ng_l"] / well["safe_limit"]
             color = "#ef4444" if mult >= 10 else "#f59e0b"
             st.markdown(f"""
             <div style="background:#1e293b;border-radius:8px;padding:20px;color:white;border-top:4px solid {color}">
@@ -259,7 +259,7 @@ if page == "🏠 Crisis Overview":
                 <div style="font-size:2rem;font-weight:700;color:{color}">{well['level_ng_l']} ng/L</div>
                 <div style="font-size:1rem;color:white;margin-top:4px">{well['contaminant']}</div>
                 <div style="font-size:0.85rem;color:#94a3b8;margin-top:8px">
-                    Safe limit: {well['safe_limit_ng_l']} ng/L<br>
+                    Safe limit: {well['safe_limit']} ng/L<br>
                     <b style="color:{color}">{mult:.0f}x over</b>
                 </div>
             </div>
