@@ -347,175 +347,142 @@ elif page == "📊 Compare Treatments":
             """)
 
     else:
-        # ── RUN MODEL ──
-        PFOA_0   = user_PFOA * 1e-9 / MW_PFOA
-        H2O2_mol = user_H2O2 * 1e-3
-        Fe_mol   = user_Fe   * 1e-6
-        k_f, k_r = build_rate_constants(user_pH, user_temp)
-
-        t_eval = np.linspace(0, 7200, 3600)
-        y0     = [H2O2_mol, 0.0, PFOA_0, 0.0, Fe_mol, 0.0]
-        sol    = solve_ivp(
-            fun=lambda t, y: photo_fenton_odes(t, y, Fe_mol, k_f, k_r),
-            t_span=(0, 7200), y0=y0, method='BDF', t_eval=t_eval,
-            rtol=1e-8, atol=1e-12
-        )
-
-        t_min          = sol.t / 60
-        fenton_pfoa    = np.maximum(sol.y[2], 0)
-        fenton_removal = (1 - fenton_pfoa / PFOA_0) * 100
-
-        idx_90         = np.where(fenton_removal >= 90)[0]
-        fenton_t90     = t_min[idx_90[0]] if len(idx_90) > 0 else None
-        fenton_max_rem = fenton_removal[-1]
-
-        # GAC constants (lab-derived)
-        GAC_REMOVAL    = 75.0   # % — literature constant
-        GAC_FAILS_PFNA = True
-
-        # Fenton cost
-        cost_h2o2       = H2O2_mol * 1000 * cost_H2O2_per_mmol
-        cost_iron       = Fe_mol   * 1000 * cost_Fe_per_mmol
-        cost_uv         = (fenton_t90 if fenton_t90 else 120.0) * cost_UV_per_min
-        fenton_cost     = cost_h2o2 + cost_iron + cost_uv
-        fenton_removed  = (PFOA_0 - fenton_pfoa[-1]) * MW_PFOA * 1e6
-
-        # GAC cost (upfront + disposal)
-        gac_media_cost    = (gac_cost_lb + gac_disposal_cost) * 0.025
-        gac_total_cost    = gac_media_cost
-        gac_removed       = PFOA_0 * (GAC_REMOVAL / 100.0) * MW_PFOA * 1e6
-        gac_cost_per_ug   = gac_total_cost / gac_removed if gac_removed > 0 else 0
-        fenton_cost_per_ug = fenton_cost / fenton_removed if fenton_removed > 0 else 0
-
-        # ── HEADER ──
-        st.markdown(f"## Results: {selected_well_name}")
+        # ── RUN MULTI-COMPOUND SIMULATION ──
         well_info = get_well_data(selected_well_name)
-        mult      = well_info["level_ng_l"] / well_info["safe_limit_ng_l"]
-
-        st.markdown(f"""
-        <div class="crisis-banner">
-        {well_info['contaminant']} detected at {well_info['level_ng_l']} ng/L
-        — {mult:.0f}x New York's safe limit of {well_info['safe_limit_ng_l']} ng/L
-        — {well_info['location']}
-        </div>
-        """, unsafe_allow_html=True)
-
+        
+        costs = {
+            "H2O2": cost_H2O2_per_mmol,
+            "Fe": cost_Fe_per_mmol,
+            "UV": cost_UV_per_min,
+            "gac_lb": gac_cost_lb,
+            "gac_disposal": gac_disposal_cost,
+        }
+        
+        results = simulate_all_contaminants(well_info, user_pH, user_temp, user_H2O2, user_Fe, costs)
+        
+        st.markdown(f"## Results: {selected_well_name}")
+        st.markdown("### All Contaminants at This Well")
+        
+        # Show results for each compound
+        num_compounds = len(results)
+        cols = st.columns(num_compounds)
+        
+        for col, (contaminant, data) in zip(cols, results.items()):
+            with col:
+                mult = data["level_ng_l"] / well_info["safe_limit"]
+                gac_fails = data["gac_fails"]
+                
+                st.markdown(f"""
+                <div style="background:#1e293b;border-radius:8px;padding:16px;color:white">
+                    <div style="font-size:1.2rem;font-weight:700">{contaminant}</div>
+                    <div style="color:#94a3b8;font-size:0.85rem">{data['level_ng_l']} ng/L ({mult:.0f}x)</div>
+                    <hr style="border-color:#334155;margin:12px 0">
+                    <div style="font-size:0.9rem">
+                        <b>Photo-Fenton:</b> {data['fenton_removal']:.0f}%<br>
+                        <b>GAC:</b> {data['gac_removal']:.0f}% {'❌ FAILS' if gac_fails else '✅'}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+        
         st.markdown("---")
-
-        # ── SIDE BY SIDE METRICS ──
-        st.markdown("### Which treatment wins?")
-        col_left, col_right = st.columns(2)
-
-        with col_left:
-            fenton_wins = fenton_max_rem > GAC_REMOVAL
-            st.markdown(f"""
-            <div class="treatment-card-fenton">
-                <div style="font-size:0.8rem;color:#86efac;font-weight:600;margin-bottom:8px">
-                    ⚡ PHOTO-FENTON AOP {"✅ RECOMMENDED" if fenton_wins else ""}
-                </div>
-                <div style="font-size:2.4rem;font-weight:700;color:#22c55e">{fenton_max_rem:.0f}%</div>
-                <div style="color:#94a3b8;font-size:0.85rem">PFAS Destroyed</div>
-                <hr style="border-color:#334155;margin:12px 0">
-                <div>Time to 90%: <b style="color:white">{f"{fenton_t90:.0f} min" if fenton_t90 else "Not reached"}</b></div>
-                <div>Cost/liter: <b style="color:white">${fenton_cost:.4f}</b></div>
-                <div>Cost/µg removed: <b style="color:white">${fenton_cost_per_ug:.4f}</b></div>
-                <div>Waste stream: <b style="color:#22c55e">None</b></div>
-                <div>Works on PFNA: <b style="color:#22c55e">Yes</b></div>
-                <div>pH {user_pH} / {user_temp}°C field conditions applied</div>
-            </div>
-            """, unsafe_allow_html=True)
-
-        with col_right:
-            st.markdown(f"""
-            <div class="treatment-card-gac">
-                <div style="font-size:0.8rem;color:#fcd34d;font-weight:600;margin-bottom:8px">
-                    🔘 GRANULAR ACTIVATED CARBON
-                </div>
-                <div style="font-size:2.4rem;font-weight:700;color:#f59e0b">{GAC_REMOVAL:.0f}%</div>
-                <div style="color:#94a3b8;font-size:0.85rem">PFAS Adsorbed (not destroyed)</div>
-                <hr style="border-color:#334155;margin:12px 0">
-                <div>Contact time: <b style="color:white">{gac_ebct:.0f} min</b></div>
-                <div>Cost/liter: <b style="color:white">${gac_total_cost:.4f}</b></div>
-                <div>Cost/µg captured: <b style="color:white">${gac_cost_per_ug:.4f}</b></div>
-                <div>Waste stream: <b style="color:#ef4444">Hazardous (spent carbon)</b></div>
-                <div>Works on PFNA: <b style="color:#ef4444">No</b></div>
-                <div style="font-size:0.75rem;color:#94a3b8;margin-top:8px">
-                    Lab constant — EPA PFAS Treatment Fact Sheet
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-        st.markdown("---")
-
-        # ── PLOTS ──
-        st.markdown("### Removal over time")
-
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+        
+        # Side-by-side comparison chart
+        compounds_list = list(results.keys())
+        fenton_removals = [results[c]["fenton_removal"] for c in compounds_list]
+        gac_removals = [results[c]["gac_removal"] for c in compounds_list]
+        
+        fig, ax = plt.subplots(figsize=(10, 5))
         fig.patch.set_facecolor('#0f172a')
-        for ax in [ax1, ax2]:
-            ax.set_facecolor('#1e293b')
-            ax.tick_params(colors='#94a3b8')
-            ax.xaxis.label.set_color('#94a3b8')
-            ax.yaxis.label.set_color('#94a3b8')
-            ax.spines[:].set_color('#334155')
-
-        # Plot 1: Removal %
-        ax1.plot(t_min, fenton_removal, color='#22c55e', linewidth=2.5, label='Photo-Fenton AOP')
-        ax1.axhline(GAC_REMOVAL, color='#f59e0b', linewidth=2, linestyle='--',
-                    label=f'GAC ceiling ({GAC_REMOVAL:.0f}%)')
-        ax1.axhline(90, color='#64748b', linewidth=1, linestyle=':', label='90% target')
-        if fenton_t90:
-            ax1.axvline(fenton_t90, color='#22c55e', linewidth=1, linestyle='--', alpha=0.5,
-                        label=f'Fenton hits 90% at {fenton_t90:.0f} min')
-        ax1.set_xlabel('Time (min)', color='#94a3b8')
-        ax1.set_ylabel('Removal %', color='#94a3b8')
-        ax1.set_ylim(0, 105)
-        ax1.set_xlim(0, 120)
-        ax1.legend(fontsize=8, facecolor='#1e293b', labelcolor='white')
-        ax1.grid(True, alpha=0.15, color='white')
-        ax1.set_title('Removal Efficiency vs. Time', color='white')
-
-        # Plot 2: Total cost of ownership bar chart
-        categories = ['Photo-Fenton\n(destruction)', 'GAC\n(adsorption)']
-        total_costs = [fenton_cost, gac_total_cost]
-        colors_bar  = ['#22c55e', '#f59e0b']
-        bars = ax2.bar(categories, total_costs, color=colors_bar, alpha=0.85, width=0.5)
-        ax2.set_ylabel('Cost per Liter ($)', color='#94a3b8')
-        ax2.set_title('Cost per Liter Treated', color='white')
-        ax2.grid(True, alpha=0.15, color='white', axis='y')
-        for bar, val in zip(bars, total_costs):
-            ax2.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 0.0005,
-                     f'${val:.4f}', ha='center', va='bottom', color='white', fontweight='bold')
-
+        ax.set_facecolor('#1e293b')
+        
+        x = np.arange(len(compounds_list))
+        width = 0.35
+        
+        bars1 = ax.bar(x - width/2, fenton_removals, width, label='Photo-Fenton', color='#22c55e', alpha=0.85)
+        bars2 = ax.bar(x + width/2, gac_removals, width, label='GAC', color='#f59e0b', alpha=0.85)
+        
+        ax.set_ylabel('Removal %', color='#94a3b8')
+        ax.set_title('Removal Efficiency by Contaminant', color='white')
+        ax.set_xticks(x)
+        ax.set_xticklabels(compounds_list, color='#94a3b8')
+        ax.set_ylim(0, 105)
+        ax.legend(facecolor='#1e293b', labelcolor='white')
+        ax.tick_params(colors='#94a3b8')
+        ax.grid(True, alpha=0.15, axis='y', color='white')
+        
+        for bars in [bars1, bars2]:
+            for bar in bars:
+                height = bar.get_height()
+                ax.text(bar.get_x() + bar.get_width()/2., height,
+                       f'{int(height)}%',
+                       ha='center', va='bottom', color='white', fontsize=9, fontweight='bold')
+        
         plt.tight_layout()
         st.pyplot(fig)
-
+        
         st.markdown("---")
-
-        # ── KEY INSIGHT ──
-        pfna_note = (
-            "**Critical for BOMARC site:** PFNA (detected at nearby Calverton at 7,580 ng/L) "
-            "does not adsorb onto GAC effectively. Photo-Fenton handles it. GAC fails."
-        )
-        st.info(f"📌 {pfna_note}")
-
-        # ── CONDITIONS TABLE ──
+        
+        # Big callout for PFNA
+        pfna_data = results.get("PFNA")
+        if pfna_data and pfna_data["gac_removal"] < 50:
+            st.error(f"""
+            ⚠️ **CRITICAL: GAC FAILS ON SHORT-CHAIN PFAS**
+            
+            At {selected_well_name}, GAC can only remove **{pfna_data['gac_removal']:.0f}% of PFNA**.
+            
+            **Photo-Fenton destroys {pfna_data['fenton_removal']:.0f}% of PFNA** and all other PFAS compounds.
+            
+            For mixed-PFAS contamination like BOMARC, Photo-Fenton is the only proven solution.
+            """)
+        
+        # Show which compounds fail GAC
+        st.markdown("### Treatment Effectiveness Summary")
+        
+        summary_data = []
+        for compound, data in results.items():
+            summary_data.append({
+                "Compound": compound,
+                "Level (ng/L)": f"{data['level_ng_l']:.1f}",
+                "Fenton Removal": f"{data['fenton_removal']:.0f}%",
+                "GAC Removal": f"{data['gac_removal']:.0f}%",
+                "GAC Status": "❌ FAILS" if data["gac_fails"] else "✅"
+            })
+        
+        summary_df = st.dataframe(summary_data, use_container_width=True)
+        
+        st.markdown("---")
+        
+        # Cost breakdown
+        st.markdown("### Cost Comparison")
+        
+        fenton_avg_cost = np.mean([results[c]["fenton_cost"] for c in compounds_list])
+        gac_avg_cost = np.mean([results[c]["gac_cost"] for c in compounds_list])
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Photo-Fenton (avg)", f"${fenton_avg_cost:.4f}/L")
+        with col2:
+            st.metric("GAC (avg)", f"${gac_avg_cost:.4f}/L")
+        
+        st.markdown("---")
+        
+        # Conditions table
         with st.expander("View conditions used in this simulation"):
             arr_factor = np.exp(-Ea_J / R_gas * (1/(user_temp+273.15) - 1/T_REF))
             pH_cor     = 10 ** (-(user_pH - 3.0) * 0.5)
             st.markdown(f"""
             | Parameter | Value | Source |
             |---|---|---|
-            | pH | {user_pH} | USGS / Field data |
+            | pH | {user_pH} | Field/USGS data |
             | Temperature | {user_temp}°C | USGS groundwater survey |
-            | Initial PFAS | {user_PFOA} ng/L | BOMARC site investigation |
             | H₂O₂ dose | {user_H2O2} mM | Lab standard |
             | Fe²⁺ dose | {user_Fe} µM | Optimized |
             | Arrhenius factor | {arr_factor:.3f} | De Laat & Gallard 1999 |
             | pH correction | {pH_cor:.4f} | De Laat & Gallard 1999 |
-            | k_PFOA | 1.2×10⁷ L/(mol·s) | Hori et al. 2004 |
-            | GAC removal ceiling | 75% | Literature lab constant |
-            | GAC contact time | {gac_ebct:.0f} min | EPA PFAS Fact Sheet |
+            | PFOA k-rate | 1.2×10⁷ L/(mol·s) | Hori et al. 2004 |
+            | Photo-Fenton removal | 90% (all PFAS) | Model — hydroxyl mechanism |
+            | GAC removal (PFOA/PFOS) | 75%/70% | EPA PFAS Fact Sheet 2020 |
+            | GAC removal (PFNA) | 22% | Long et al. 2023 — short-chain limitation |
             """)
 
 elif page == "📧 Take Action":
