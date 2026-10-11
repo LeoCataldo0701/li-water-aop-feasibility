@@ -173,6 +173,58 @@ def photo_fenton_odes(t, y, Fe_total, k_f, k_r):
     dFe3  = -dFe2
     return [dH2O2, dOH, dPFOA, dI, dFe2, dFe3]
 
+def simulate_all_contaminants(well_info, pH, temp, H2O2, Fe, costs):
+    """Simulate Fenton + GAC for all contaminants at a well"""
+    results = {}
+    
+    for contaminant, data in well_info["compounds"].items():
+        level_ng_l = data["level_ng_l"]
+        gac_removal_pct = data["gac_removal"] * 100
+        
+        # Run Fenton ODE (same for all — hydroxyl radicals don't distinguish)
+        PFOA_0 = level_ng_l * 1e-9 / MW_PFOA  # Convert to mol/L
+        H2O2_mol = H2O2 * 1e-3
+        Fe_mol = Fe * 1e-6
+        k_f, k_r = build_rate_constants(pH, temp)
+        
+        t_eval = np.linspace(0, 7200, 3600)
+        y0 = [H2O2_mol, 0.0, PFOA_0, 0.0, Fe_mol, 0.0]
+        sol = solve_ivp(
+            fun=lambda t, y: photo_fenton_odes(t, y, Fe_mol, k_f, k_r),
+            t_span=(0, 7200), y0=y0, method='BDF', t_eval=t_eval,
+            rtol=1e-8, atol=1e-12
+        )
+        
+        t_min = sol.t / 60
+        fenton_pfoa = np.maximum(sol.y[2], 0)
+        fenton_removal = (1 - fenton_pfoa / PFOA_0) * 100
+        
+        idx_90 = np.where(fenton_removal >= 90)[0]
+        t90 = t_min[idx_90[0]] if len(idx_90) > 0 else None
+        
+        # Fenton cost (same for all)
+        cost_h2o2 = H2O2_mol * 1000 * costs["H2O2"]
+        cost_iron = Fe_mol * 1000 * costs["Fe"]
+        cost_uv = (t90 if t90 else 120.0) * costs["UV"]
+        fenton_cost = cost_h2o2 + cost_iron + cost_uv
+        
+        # GAC cost (different removal per compound)
+        gac_cost = (costs["gac_lb"] + costs["gac_disposal"]) * 0.025
+        
+        results[contaminant] = {
+            "level_ng_l": level_ng_l,
+            "fenton_removal": fenton_removal[-1],
+            "fenton_t90": t90,
+            "fenton_cost": fenton_cost,
+            "gac_removal": gac_removal_pct,
+            "gac_cost": gac_cost,
+            "gac_fails": gac_removal_pct < 50,
+            "t_min": t_min,
+            "fenton_removal_curve": fenton_removal,
+        }
+    
+    return results
+
 # ─────────────────────────────────────────
 # PAGE ROUTING
 # ─────────────────────────────────────────
