@@ -254,9 +254,9 @@ if page == "🏠 Crisis Overview":
             # Find the compound with the highest level to feature on the card
             max_comp_name, max_comp_data = max(well["compounds"].items(), key=lambda x: x[1]["level_ng_l"])
             level = max_comp_data["level_ng_l"]
-            safe_limit = well["safe_limit_ng_l"]
+            safe_limit_ng_l = well["safe_limit_ng_l"]  # Make sure this matches the string below!
         
-            mult = level / safe_limit
+            mult = level / safe_limit_ng_l
             color = "#ef4444" if mult >= 10 else "#f59e0b"
         
             st.markdown(f"""
