@@ -251,7 +251,7 @@ if page == "🏠 Crisis Overview":
 
     for i, (col, well) in enumerate(zip(cols, wells)):
         with col:
-            mult = well["level_ng_l"] / well["safe_limit"]
+            mult = well["level_ng_l"] / well["safe_limit_ng_l"]
             color = "#ef4444" if mult >= 10 else "#f59e0b"
             st.markdown(f"""
             <div style="background:#1e293b;border-radius:8px;padding:20px;color:white;border-top:4px solid {color}">
@@ -259,7 +259,7 @@ if page == "🏠 Crisis Overview":
                 <div style="font-size:2rem;font-weight:700;color:{color}">{well['level_ng_l']} ng/L</div>
                 <div style="font-size:1rem;color:white;margin-top:4px">{well['contaminant']}</div>
                 <div style="font-size:0.85rem;color:#94a3b8;margin-top:8px">
-                    Safe limit: {well['safe_limit']} ng/L<br>
+                    Safe limit: {well['safe_limit_ng_l']} ng/L<br>
                     <b style="color:{color}">{mult:.0f}x over</b>
                 </div>
             </div>
@@ -369,7 +369,7 @@ elif page == "📊 Compare Treatments":
         
         for col, (contaminant, data) in zip(cols, results.items()):
             with col:
-                mult = data["level_ng_l"] / well_info["safe_limit"]
+                mult = data["level_ng_l"] / well_info["safe_limit_ng_l"]
                 gac_fails = data["gac_fails"]
                 
                 st.markdown(f"""
@@ -525,8 +525,8 @@ elif page == "📧 Take Action":
                                         "Suffolk County Dept. of Health Services")
         official_email = st.text_input("Official email",
                                         "waterquality@suffolkcountyny.gov")
-        safe_limit     = 10.0
-        multiplier     = pfas_level / safe_limit
+        safe_limit_ng_l     = 10.0
+        multiplier     = pfas_level / safe_limit_ng_l
 
     st.markdown("---")
 
