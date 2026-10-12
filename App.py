@@ -104,7 +104,7 @@ if page == "📊 Compare Treatments":
         label_visibility="collapsed"
     )
     well_info  = get_well_data(selected_well_name)
-    user_PFOA  = float(well_info["level_ng_l"])
+    user_PFOA = float(well_info["compounds"]["PFOA"]["level_ng_l"])
     user_pH    = FIELD_CONDITIONS["pH"]
     user_temp  = FIELD_CONDITIONS["temp_C"]
 
@@ -265,7 +265,7 @@ if page == "🏠 Crisis Overview":
                 <div style="font-size:2rem;font-weight:700;color:{color}">{level} ng/L</div>
                 <div style="font-size:1rem;color:white;margin-top:4px">{max_comp_name}</div>
                 <div style="font-size:0.85rem;color:#94a3b8;margin-top:8px"> 
-                    Safe limit: {safe_limit} ng/L<br>
+                    Safe limit: {safe_limit_ng_l} ng/L<br>
                     <b style="color:{color}">{mult:.0f}x over</b> 
                 </div>
             </div>
@@ -546,7 +546,7 @@ Dear {official_name},
 
 I am writing as a concerned resident of {your_town} to formally request action on PFAS contamination affecting groundwater in my community.
 
-Recent testing at the BOMARC Site (Westhampton) has detected {contaminant} at {pfas_level:.0f} ng/L — {multiplier:.0f}x New York's safe limit of {safe_limit:.0f} ng/L.
+Recent testing at the BOMARC Site (Westhampton) has detected {contaminant} at {pfas_level:.0f} ng/L — {multiplier:.0f}x New York's safe limit of {safe_limit_ng_l:.0f} ng/L.
 
 As a resident who relies on this water supply, I am requesting:
 
