@@ -245,31 +245,31 @@ if page == "🏠 Crisis Overview":
     )
 
     # Well data cards
-col1, col2, col3 = st.columns(3)
-wells = list(BOMARC_WELLS.values())
-cols = [col1, col2, col3]
+    col1, col2, col3 = st.columns(3)
+    wells = list(BOMARC_WELLS.values())
+    cols = [col1, col2, col3]
 
-for i, (col, well) in enumerate(zip(cols, wells)):
-    with col:
-        # Find the compound with the highest level to feature on the card
-        max_comp_name, max_comp_data = max(well["compounds"].items(), key=lambda x: x[1]["level_ng_l"])
-        level = max_comp_data["level_ng_l"]
-        safe_limit = well["safe_limit_ng_l"]
+    for i, (col, well) in enumerate(zip(cols, wells)):
+        with col:
+            # Find the compound with the highest level to feature on the card
+            max_comp_name, max_comp_data = max(well["compounds"].items(), key=lambda x: x[1]["level_ng_l"])
+            level = max_comp_data["level_ng_l"]
+            safe_limit = well["safe_limit_ng_l"]
         
-        mult = level / safe_limit
-        color = "#ef4444" if mult >= 10 else "#f59e0b"
+            mult = level / safe_limit
+            color = "#ef4444" if mult >= 10 else "#f59e0b"
         
-        st.markdown(f"""
-        <div style="background:#1e293b;border-radius:8px;padding:20px;color:white;border-top:4px solid {color}">
-            <div style="font-size:0.8rem;color:#94a3b8;margin-bottom:4px">{well['location']}</div>
-            <div style="font-size:2rem;font-weight:700;color:{color}">{level} ng/L</div>
-            <div style="font-size:1rem;color:white;margin-top:4px">{max_comp_name}</div>
-            <div style="font-size:0.85rem;color:#94a3b8;margin-top:8px"> 
-                Safe limit: {safe_limit} ng/L<br>
-                <b style="color:{color}">{mult:.0f}x over</b> 
+            st.markdown(f"""
+            <div style="background:#1e293b;border-radius:8px;padding:20px;color:white;border-top:4px solid {color}">
+                <div style="font-size:0.8rem;color:#94a3b8;margin-bottom:4px">{well['location']}</div>
+                <div style="font-size:2rem;font-weight:700;color:{color}">{level} ng/L</div>
+                <div style="font-size:1rem;color:white;margin-top:4px">{max_comp_name}</div>
+                <div style="font-size:0.85rem;color:#94a3b8;margin-top:8px"> 
+                    Safe limit: {safe_limit} ng/L<br>
+                    <b style="color:{color}">{mult:.0f}x over</b> 
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
     st.markdown("---")
 
     col_left, col_right = st.columns([2, 1])
