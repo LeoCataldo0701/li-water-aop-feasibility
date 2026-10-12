@@ -168,5 +168,7 @@ def get_treatment_comparison():
 def format_crisis_message(well_name):
     """Generate crisis alert message"""
     well = BOMARC_WELLS[well_name]
-    multiplier = well["level_ng_l"] / well["safe_limit_ng_l"]
-    return f"{well['contaminant']} at {well['level_ng_l']} ng/L — **{multiplier:.0f}x above safe limits**"
+    max_comp_name, max_comp_data = max(well["compounds"].items(), key=lambda x: x[1]["level_ng_l"])
+    level = max_comp_data["level_ng_l"]
+    multiplier = level / well["safe_limit_ng_l"]
+    return f"{max_comp_name} at {level} ng/L — **{multiplier:.0f}x above safe limits**"
