@@ -364,6 +364,13 @@ elif page == "📊 Compare Treatments":
         }
         
         results = simulate_all_contaminants(well_info, user_pH, user_temp, user_H2O2, user_Fe, costs)
+                # DEBUG: Verify that rate constants are actually changing
+        k_f_debug, k_r_debug = build_rate_constants(user_pH, user_temp)
+        st.write(f"**DEBUG - Rate Constants at pH {user_pH}, {user_temp}°C:**")
+        st.write(f"k_f = {k_f_debug:.6e}")
+        st.write(f"k_r = {k_r_debug:.6e}")
+        st.write(f"Arrhenius factor = {np.exp(-Ea_J / R_gas * (1/(user_temp+273.15) - 1/T_REF)):.4f}")
+        st.write(f"pH correction = {10 ** (-(user_pH - 3.0) * 0.5):.4f}")
         
         st.markdown(f"## Results: {selected_well_name}")
         st.markdown("### All Contaminants at This Well")
