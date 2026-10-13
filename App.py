@@ -151,7 +151,7 @@ k_PFOA = 1.2e7
 k_I = 3e8
 k_s = 2e4
 k_H2O2_scav = 2.7e7
-k_Fe = 4.3e8
+k_Fe = 2.3e8
 k_hv_Fe = 3.5e-4
 k_hv_h2o2 = 6.6e-6
 
