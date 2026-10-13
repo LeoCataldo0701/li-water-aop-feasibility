@@ -153,7 +153,7 @@ k_s = 2e4
 k_H2O2_scav = 2.7e7
 k_Fe = 2.3e8
 k_hv_Fe = 3.5e-4
-k_hv_h2o2 = 6.6e-6
+k_hv_h2o2 = 1e-3
 
 def build_rate_constants(pH, temp_C):
     temp_K = temp_C + 273.15
