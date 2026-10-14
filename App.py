@@ -161,7 +161,7 @@ if page == "🏠 Home":
         <div style="font-size:0.85rem;color:#94a3b8;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px;">
             ● PFAS CONTAMINATION SELF-REPORTING TOOL
         </div>
-        <div style="font-size:3.8rem;font-weight:900;color:blue;line-height:1.05;margin-bottom:14px;letter-spacing:-0.02em;">
+        <div style="font-size:3.8rem;font-weight:900;color:lightblue;line-height:1.05;margin-bottom:14px;letter-spacing:-0.02em;">
             WellGuard
         </div>
         <div style="font-size:1.1rem;color:#94a3b8;max-width:500px;margin:0 auto 48px auto;line-height:1.65;">
