@@ -372,13 +372,6 @@ Sincerely,
 
     else:
         # ── REPORT CONTAMINATION FLOW ──
-        st.markdown("### Step 3: Your situation and details")
-        site_type = st.radio("", [
-            "Resident near a contaminated well",
-            "Contacting my water district",
-            "Contamination near an industrial site"
-        ], horizontal=True, label_visibility="collapsed")
-
         col1, col2 = st.columns(2)
         with col1:
             your_name   = st.text_input("Your name", "Your Name")
