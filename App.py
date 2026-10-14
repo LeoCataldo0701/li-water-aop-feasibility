@@ -460,25 +460,6 @@ elif page == "🧪 Testing Kits":
     )
  
     st.info("🔧 **Links to NY-certified testing labs coming soon.** Check back shortly.")
- 
-    st.markdown("---")
-    st.markdown("### What to know before you test")
-    st.markdown("""
-    - **Public water (town/village supply):** Your water district is required to test. 
-      Contact them directly or check their annual Consumer Confidence Report (CCR).
-    - **Private well:** You must arrange and pay for testing yourself (~$150–$400 for a PFAS panel).
-    - **NY State certified labs only.** Results from uncertified labs cannot be used for legal action.
-    """)
- 
-    st.markdown("### What to request")
-    st.markdown("""
-    Ask for a **PFAS panel** that includes at minimum:
-    - PFOA
-    - PFOS  
-    - PFNA
-    - PFBS, PFHxS, PFHxA (broader panel recommended for BOMARC-adjacent areas)
-    """)
- 
     st.markdown("---")
     st.caption("NY State certified lab list: https://www.health.ny.gov/environmental/water/drinking/")
  
