@@ -8,7 +8,7 @@ warnings.filterwarnings('ignore')
 from well_data import BOMARC_WELLS, FIELD_CONDITIONS, get_well_data
 
 st.set_page_config(
-    page_title="LI Water Watch",
+    page_title="WellGuard",
     page_icon="💧",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -51,21 +51,15 @@ st.markdown("""
     background: #1e293b; border-radius: 10px; padding: 28px 20px;
     color: white; text-align: center; border: 1px solid #334155;
     min-height: 130px; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; margin-bottom: 0;
+    align-items: center; justify-content: center;
 }
 .action-card .icon { font-size: 2rem; margin-bottom: 10px; }
 .action-card .label { font-size: 0.95rem; font-weight: 600; color: #e2e8f0; line-height: 1.3; }
-.issue-card {
-    background: #1e293b; border-radius: 10px; padding: 20px; color: white; margin-bottom: 16px;
-}
-.crisis-banner {
-    background: #b91c1c; color: white; padding: 14px 20px;
-    border-radius: 8px; margin-bottom: 16px; font-size: 1rem; font-weight: 600;
-}
+.issue-card { background: #1e293b; border-radius: 10px; padding: 20px; color: white; margin-bottom: 16px; }
+.result-card { background: #1e293b; border-radius: 8px; padding: 16px; color: white; margin-bottom: 8px; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── SESSION STATE ──
 if "page" not in st.session_state:
     st.session_state.page = "🏠 Home"
 
@@ -73,14 +67,13 @@ def go(p):
     st.session_state.page = p
     st.rerun()
 
-# ── SIDEBAR ──
 with st.sidebar:
-    st.markdown("### 💧 LI Water Watch")
+    st.markdown("### 💧 WellGuard")
     st.markdown("*Long Island Water Safety*")
     if st.button("🏠 Home", use_container_width=True):
         go("🏠 Home")
     st.markdown("---")
-    for label in ["📋 The Issue", "🧪 Testing Kits", "📧 Report Contamination", "📊 Compare Treatments", "❓ FAQs"]:
+    for label in ["📋 The Issue", "📧 Report Contamination", "📊 Compare Treatments", "❓ FAQs", "🧪 Testing Kits"]:
         if st.button(label, use_container_width=True, key=f"nav_{label}"):
             go(label)
     st.markdown("---")
@@ -122,16 +115,40 @@ def simulate_all_contaminants(well_info, pH, temp, H2O2, Fe, costs):
             t_span=(0,7200), y0=[H2O2_mol,0.0,PFOA_0,0.0,Fe_mol,0.0],
             method='BDF', t_eval=t_eval, rtol=1e-8, atol=1e-12
         )
-        t_min = sol.t/60
-        f_rem = (1 - np.maximum(sol.y[2],0)/PFOA_0)*100
-        idx_90 = np.where(f_rem>=90)[0]
-        t90    = t_min[idx_90[0]] if len(idx_90)>0 else None
-        fc     = H2O2_mol*1000*costs["H2O2"] + Fe_mol*1000*costs["Fe"] + (t90 or 120.0)*costs["UV"]
-        gc     = (costs["gac_lb"]+costs["gac_disposal"])*0.025
+        t_min  = sol.t / 60
+        f_rem  = (1 - np.maximum(sol.y[2], 0) / PFOA_0) * 100
+        idx_90 = np.where(f_rem >= 90)[0]
+        t90    = t_min[idx_90[0]] if len(idx_90) > 0 else None
+
+        # Cost per liter
+        fc = H2O2_mol*1000*costs["H2O2"] + Fe_mol*1000*costs["Fe"] + (t90 or 120.0)*costs["UV"]
+        gc = (costs["gac_lb"] + costs["gac_disposal"]) * 0.025
+
+        # Cost per µg PFOA removed
+        pfoa_removed_ug = (PFOA_0 * f_rem[-1] / 100) * MW_PFOA * 1e6
+        gac_removed_ug  = (PFOA_0 * gac_pct / 100)  * MW_PFOA * 1e6
+        fc_per_ug = fc / pfoa_removed_ug if pfoa_removed_ug > 0 else 9999
+        gc_per_ug = gc / gac_removed_ug  if gac_removed_ug  > 0 else 9999
+
+        # Who wins on removal and cost?
+        fenton_wins_removal = f_rem[-1] > gac_pct
+        fenton_wins_cost    = fc < gc
+        short_chain = gac_pct < 50  # GAC structurally fails
+
         results[contaminant] = {
-            "level_ng_l": level_ng_l, "fenton_removal": f_rem[-1], "fenton_t90": t90,
-            "fenton_cost": fc, "gac_removal": gac_pct, "gac_cost": gc,
-            "gac_fails": gac_pct<50, "t_min": t_min, "fenton_removal_curve": f_rem,
+            "level_ng_l":           level_ng_l,
+            "fenton_removal":       f_rem[-1],
+            "fenton_t90":           t90,
+            "fenton_cost":          fc,
+            "fenton_cost_per_ug":   fc_per_ug,
+            "gac_removal":          gac_pct,
+            "gac_cost":             gc,
+            "gac_cost_per_ug":      gc_per_ug,
+            "gac_fails":            short_chain,
+            "fenton_wins_removal":  fenton_wins_removal,
+            "fenton_wins_cost":     fenton_wins_cost,
+            "t_min":                t_min,
+            "fenton_removal_curve": f_rem,
         }
     return results
 
@@ -144,10 +161,10 @@ if page == "🏠 Home":
         <div style="font-size:0.85rem;color:#94a3b8;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px;">
             ● PFAS CONTAMINATION SELF-REPORTING TOOL
         </div>
-        <div style="font-size:3.4rem;font-weight:800;color:white;line-height:1.1;margin-bottom:14px;">
-            LI Water Watch
+        <div style="font-size:3.8rem;font-weight:900;color:white;line-height:1.05;margin-bottom:14px;letter-spacing:-0.02em;">
+            WellGuard
         </div>
-        <div style="font-size:1.1rem;color:#94a3b8;max-width:480px;margin:0 auto 48px auto;line-height:1.65;">
+        <div style="font-size:1.1rem;color:#94a3b8;max-width:500px;margin:0 auto 48px auto;line-height:1.65;">
             Real contamination data. Local officials. Actionable steps.<br>
             Built for Long Island residents affected by PFAS in their groundwater.
         </div>
@@ -156,10 +173,10 @@ if page == "🏠 Home":
 
     c1, c2, c3, c4 = st.columns(4)
     cards = [
-        (c1, "📧", "Connect with a\nLocal Official", "📧 Report Contamination"),
-        (c2, "📊", "Determine Feasible\nTreatment Options", "📊 Compare Treatments"),
-        (c3, "📋", "Learn More\nAbout the Issue", "📋 The Issue"),
-        (c4, "🧪", "Check Your\nOwn Property", "🧪 Testing Kits"),
+        (c1, "📧", "Connect with a\nLocal Official",         "📧 Report Contamination"),
+        (c2, "📊", "Determine Feasible\nTreatment Options",  "📊 Compare Treatments"),
+        (c3, "📋", "Learn More\nAbout the Issue",            "📋 The Issue"),
+        (c4, "🧪", "Check Your\nOwn Property",               "🧪 Testing Kits"),
     ]
     for col, icon, label, target in cards:
         with col:
@@ -179,72 +196,59 @@ if page == "🏠 Home":
 # THE ISSUE
 # ════════════════════════════════════════
 elif page == "📋 The Issue":
-
     st.markdown("## What's Happening to Long Island's Water?")
     st.markdown("---")
 
-    # ── 1. What are PFAS? ──
     st.markdown("### 🧪 What are PFAS?")
     col_a, col_b = st.columns([1, 2])
     with col_a:
-        st.image(
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/PFOA_structure.svg/320px-PFOA_structure.svg.png",
-            caption="PFOA — a common PFAS compound", use_container_width=True
-        )
+        st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/PFOA_structure.svg/320px-PFOA_structure.svg.png",
+                 caption="PFOA — a common PFAS compound", use_container_width=True)
     with col_b:
         st.markdown("""
         **Per- and polyfluoroalkyl substances (PFAS)** are man-made chemicals used since the 1950s
         in non-stick cookware, waterproof clothing, and — critically — **military firefighting foam**.
 
         The carbon-fluorine bond is the strongest in organic chemistry.
-        PFAS never break down. They accumulate in soil, water, and the human body indefinitely.
-        That's why they're called **"forever chemicals."**
+        PFAS never break down in soil, water, or the human body — hence **"forever chemicals."**
 
-        > *Long Island's source of contamination: AFFF firefighting foam used at military installations
-        > including the BOMARC missile site in Westhampton.*
+        > *Long Island's contamination source: AFFF firefighting foam used at the BOMARC missile site in Westhampton.*
         """)
-
     st.markdown("---")
 
-    # ── 2. How are they harmful? ──
     st.markdown("### ⚠️ How are they harmful?")
     h1, h2, h3 = st.columns(3)
     for col, icon, title, text in [
-        (h1, "🎗️", "Cancer Risk", "Linked to kidney, testicular, and thyroid cancers at prolonged exposures above safe limits."),
+        (h1, "🎗️", "Cancer Risk",       "Linked to kidney, testicular, and thyroid cancers at prolonged exposures above safe limits."),
         (h2, "🧒", "Child Development", "Disrupts hormones and immune development. Infants are most vulnerable via breast milk and formula."),
-        (h3, "🫀", "Heart & Liver", "Associated with elevated cholesterol and liver enzyme abnormalities even at low chronic doses."),
+        (h3, "🫀", "Heart & Liver",     "Associated with elevated cholesterol and liver enzyme abnormalities even at low chronic doses."),
     ]:
         with col:
             st.markdown(f"""
-            <div class="issue-card" style="border-top:3px solid #ef4444; text-align:center;">
+            <div class="issue-card" style="border-top:3px solid #ef4444;text-align:center;">
                 <div style="font-size:2rem;">{icon}</div>
                 <div style="font-weight:700;margin:8px 0 6px 0;">{title}</div>
                 <div style="font-size:0.85rem;color:#94a3b8;line-height:1.5;">{text}</div>
             </div>
             """, unsafe_allow_html=True)
-
     st.markdown("---")
 
-    # ── 3. Long Island ──
     st.markdown("### 🗺️ What Happened on Long Island?")
     col_li1, col_li2 = st.columns([3, 2])
     with col_li1:
         st.markdown("""
-        Long Island sits entirely on a **sole-source aquifer** — there is no backup water supply for 3 million people.
-        Sandy glacial soil lets contaminants travel fast and deep.
+        Long Island's **sole-source aquifer** supplies 3 million people with no backup.
+        Sandy glacial soil lets contaminants reach groundwater fast.
 
-        The **BOMARC missile site** in Westhampton was active from the 1950s–70s.
-        PFAS-containing firefighting foam (AFFF) soaked into the soil for decades.
-        Suffolk County DOHS confirmed contamination **up to 10x above New York's safe limit** in 2020 and 2024.
+        The **BOMARC missile site** (Westhampton, 1950s–70s) used PFAS firefighting foam
+        that soaked into the soil for decades. Suffolk County DOHS confirmed contamination
+        **up to 10x above New York's safe limit** in both 2020 and 2024 investigations.
         """)
-
         w1, w2, w3 = st.columns(3)
-        wells = list(BOMARC_WELLS.values())
-        for col, well in zip([w1, w2, w3], wells):
+        for col, well in zip([w1, w2, w3], list(BOMARC_WELLS.values())):
             with col:
                 max_comp, max_data = max(well["compounds"].items(), key=lambda x: x[1]["level_ng_l"])
-                level = max_data["level_ng_l"]
-                mult  = level / well["safe_limit_ng_l"]
+                level = max_data["level_ng_l"]; mult = level / well["safe_limit_ng_l"]
                 color = "#ef4444" if mult >= 10 else "#f59e0b"
                 st.markdown(f"""
                 <div style="background:#0f172a;border-radius:8px;padding:14px;color:white;border-left:4px solid {color}">
@@ -255,14 +259,10 @@ elif page == "📋 The Issue":
                 </div>
                 """, unsafe_allow_html=True)
     with col_li2:
-        st.image(
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/CIM-10_Bomarc_at_March_AFB_Museum.jpg/320px-CIM-10_Bomarc_at_March_AFB_Museum.jpg",
-            caption="BOMARC missile — PFAS foam was used at the Westhampton launch site", use_container_width=True
-        )
-
+        st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/CIM-10_Bomarc_at_March_AFB_Museum.jpg/320px-CIM-10_Bomarc_at_March_AFB_Museum.jpg",
+                 caption="BOMARC missile — PFAS foam used at Westhampton launch site", use_container_width=True)
     st.markdown("---")
 
-    # ── 4. Treatment ──
     st.markdown("### 🔬 How Can It Be Treated?")
     t1, t2 = st.columns(2)
     with t1:
@@ -270,9 +270,9 @@ elif page == "📋 The Issue":
         <div class="issue-card" style="border-left:4px solid #f59e0b;">
             <div style="font-weight:700;font-size:1.05rem;margin-bottom:8px;">🟡 Granular Activated Carbon (GAC) — Current Standard</div>
             <div style="font-size:0.875rem;color:#94a3b8;line-height:1.6;">
-            Water passes through carbon media. PFAS stick to the surface — <b style="color:white">not destroyed</b>.<br><br>
-            Spent carbon becomes <b style="color:#ef4444">hazardous waste</b> requiring disposal every 8 months.
-            Short-chain PFAS like PFNA barely adsorb — only ~22% removal.
+            PFAS stick to carbon media — <b style="color:white">not destroyed</b>. Spent carbon becomes
+            <b style="color:#ef4444">hazardous waste</b> every 8 months. Short-chain PFAS like PFNA
+            barely adsorb (~22% removal).
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -281,67 +281,50 @@ elif page == "📋 The Issue":
         <div class="issue-card" style="border-left:4px solid #22c55e;">
             <div style="font-weight:700;font-size:1.05rem;margin-bottom:8px;">🟢 Photo-Fenton AOP — Emerging Alternative</div>
             <div style="font-size:0.875rem;color:#94a3b8;line-height:1.6;">
-            Iron + hydrogen peroxide + UV generates hydroxyl radicals that
-            <b style="color:white">chemically destroy</b> PFAS — breaking every C–F bond.<br><br>
-            Works on all PFAS variants. <b style="color:#22c55e">No hazardous waste. No replacement cycle.</b>
+            Iron + H₂O₂ + UV generates hydroxyl radicals that <b style="color:white">chemically destroy</b>
+            PFAS — every C–F bond. Works on all PFAS variants.
+            <b style="color:#22c55e">No hazardous waste. No replacement cycle.</b>
             Developed in part at CUNY MEC Vittadello Lab.
             </div>
         </div>
         """, unsafe_allow_html=True)
-
     st.markdown("---")
 
-    # ── News links ──
     st.markdown("### 📰 In the News")
     n1, n2, n3 = st.columns(3)
-    with n1:
-        st.markdown("""
-        <div class="issue-card">
-            <div style="font-size:0.7rem;color:#94a3b8;margin-bottom:6px;">NEWSDAY</div>
-            <div style="font-weight:600;font-size:0.9rem;margin-bottom:10px;">"PFAS Detected in Long Island Wells Near Military Sites"</div>
-            <a href="https://www.newsday.com/long-island/environment/pfas-water-contamination-suffolk-nassau-long-island-dvbkxn71"
-               target="_blank" style="color:#22c55e;font-size:0.85rem;">Read →</a>
-        </div>
-        """, unsafe_allow_html=True)
-    with n2:
-        st.markdown("""
-        <div class="issue-card">
-            <div style="font-size:0.7rem;color:#94a3b8;margin-bottom:6px;">EPA</div>
-            <div style="font-weight:600;font-size:0.9rem;margin-bottom:10px;">"First-Ever National PFAS Drinking Water Standards" (2024)</div>
-            <a href="https://www.epa.gov/newsreleases/biden-harris-administration-finalizes-first-ever-national-drinking-water-standard-pfas"
-               target="_blank" style="color:#22c55e;font-size:0.85rem;">Read →</a>
-        </div>
-        """, unsafe_allow_html=True)
-    with n3:
-        st.markdown("""
-        <div class="issue-card">
-            <div style="font-size:0.7rem;color:#94a3b8;margin-bottom:6px;">SUFFOLK COUNTY DOHS</div>
-            <div style="font-weight:600;font-size:0.9rem;margin-bottom:10px;">BOMARC Site Investigation & Groundwater Reports (2020, 2024)</div>
-            <a href="https://www.suffolkcountyny.gov/Departments/Health-Services/Environmental-Quality"
-               target="_blank" style="color:#22c55e;font-size:0.85rem;">View →</a>
-        </div>
-        """, unsafe_allow_html=True)
-
+    for col, source, headline, url in [
+        (n1, "NEWSDAY",            '"PFAS Detected in Long Island Wells Near Military Sites"',               "https://www.newsday.com/long-island/environment/pfas-water-contamination-suffolk-nassau-long-island-dvbkxn71"),
+        (n2, "EPA",                '"First-Ever National PFAS Drinking Water Standards" (2024)',             "https://www.epa.gov/newsreleases/biden-harris-administration-finalizes-first-ever-national-drinking-water-standard-pfas"),
+        (n3, "SUFFOLK COUNTY DOHS","BOMARC Site Investigation & Groundwater Reports (2020, 2024)",          "https://www.suffolkcountyny.gov/Departments/Health-Services/Environmental-Quality"),
+    ]:
+        with col:
+            st.markdown(f"""
+            <div class="issue-card">
+                <div style="font-size:0.7rem;color:#94a3b8;margin-bottom:6px;">{source}</div>
+                <div style="font-weight:600;font-size:0.9rem;margin-bottom:10px;">{headline}</div>
+                <a href="{url}" target="_blank" style="color:#22c55e;font-size:0.85rem;">Read →</a>
+            </div>
+            """, unsafe_allow_html=True)
     st.caption("Sources: Suffolk County DOHS, USGS Finkelstein et al. 2025, EPA, NYS DEC")
-
-# ════════════════════════════════════════
-# TESTING KITS
-# ════════════════════════════════════════
-elif page == "🧪 Testing Kits":
-    st.markdown("## 🧪 Get Your Water Tested")
-    st.markdown("---")
-    st.info("🔧 **Links to NY State-certified PFAS testing labs coming soon.** Check back before October 26.")
-    st.caption("NY State certified lab list: https://www.health.ny.gov/environmental/water/drinking/")
 
 # ════════════════════════════════════════
 # REPORT CONTAMINATION
 # ════════════════════════════════════════
 elif page == "📧 Report Contamination":
-    st.markdown("## 📧 Report Contamination to Your Officials")
-    st.markdown("Generate a formal letter to your town's officials — in 30 seconds.")
+    st.markdown("## 📧 Connect with Your Local Officials")
     st.markdown("---")
 
-    st.markdown("### Step 1: Enter your town")
+    # Step 1: Intent
+    st.markdown("### Step 1: What describes your situation?")
+    intent = st.radio("", [
+        "I want to learn more — connect me with a local official",
+        "I want to report contamination"
+    ], label_visibility="collapsed")
+
+    st.markdown("---")
+
+    # Step 2: Town
+    st.markdown("### Step 2: Enter your town")
     selected_town = st.selectbox("Start typing your town:", list(TOWN_OFFICIALS.keys()), index=0)
     official = TOWN_OFFICIALS[selected_town]
     county_color = "#3b82f6" if official["county"] == "Nassau" else "#8b5cf6"
@@ -354,35 +337,122 @@ elif page == "📧 Report Contamination":
     """, unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("### Step 2: What are you reporting?")
-    site_type = st.radio("", ["Resident near a contaminated well", "Contacting my water district", "Contamination near an industrial site"], horizontal=True, label_visibility="collapsed")
 
-    st.markdown("---")
-    st.markdown("### Step 3: Your details")
-    col1, col2 = st.columns(2)
-    with col1:
-        your_name   = st.text_input("Your name", "Your Name")
-        pfas_level  = st.number_input("PFAS level detected (ng/L)", value=100.0, step=1.0)
-        contaminant = st.selectbox("Contaminant", ["PFOA", "PFOS", "PFNA", "General PFAS"])
-    with col2:
-        official_name  = st.text_input("Official / department", official["name"])
-        official_email = st.text_input("Official email", official["email"])
-        multiplier = pfas_level / 10.0
+    if intent == "I want to learn more — connect me with a local official":
+        # ── LEARN MORE FLOW ──
+        st.markdown("### Step 3: Your details")
+        col1, col2 = st.columns(2)
+        with col1:
+            your_name = st.text_input("Your name", "Your Name")
+        with col2:
+            official_name  = st.text_input("Official / department", official["name"])
+            official_email = st.text_input("Official email", official["email"])
 
-    st.markdown("---")
-    st.markdown("### Step 4: Your letter")
+        st.markdown("---")
+        st.markdown("### Step 4: Your letter")
+        subject = f"Question About PFAS Contamination and Water Safety — {selected_town}"
+        body = f"""Subject: {subject}
 
-    if site_type == "Resident near a contaminated well":
-        subject = f"URGENT: PFAS Contamination Near My Home — {selected_town}"
-        body = f"Subject: {subject}\n\nDear {official_name},\n\nI am a resident of {selected_town} writing to request urgent action on PFAS contamination in our groundwater.\n\nRecent BOMARC site testing detected {contaminant} at {pfas_level:.0f} ng/L — {multiplier:.0f}x New York's 10 ng/L safe limit.\n\nI am requesting:\n1. Immediate public notification of affected residents\n2. Free water testing within 1 mile of affected wells\n3. A clear remediation timeline\n4. A public meeting within 30 days\n\nI urge evaluation of Photo-Fenton Advanced Oxidation, which destroys all PFAS variants including PFNA that carbon filters cannot remove.\n\nSincerely,\n{your_name}\n{selected_town}, NY"
-    elif site_type == "Contacting my water district":
-        subject = f"Request: PFAS Treatment Disclosure — {selected_town} Water District"
-        body = f"Subject: {subject}\n\nDear {official_name},\n\nI am requesting transparency on PFAS treatment in our water supply. {contaminant} has been detected at {pfas_level:.0f} ng/L ({multiplier:.0f}x the NYS safe limit).\n\nI request:\n1. Confirmation of current treatment technology (GAC vs. AOP)\n2. Removal efficiency data for PFOA, PFOS, and PFNA\n3. Timeline for upgrading to advanced oxidation if currently using GAC\n4. Funding plan for treatment upgrades\n\nSincerely,\n{your_name}\n{selected_town}, NY"
+Dear {official_name},
+
+My name is {your_name}, and I am a resident of {selected_town}. I am writing because I have concerns about PFAS contamination in Long Island's groundwater and would like to learn more about the steps being taken to protect our community.
+
+Specifically, I would appreciate information on:
+
+1. Current PFAS monitoring results for wells near {selected_town}
+2. What treatment technology is in use or planned for our water supply
+3. Whether residents on private wells can access any county-supported testing
+4. Who I should contact if I want to stay updated on remediation progress
+
+Thank you for your time. I look forward to hearing from you.
+
+Sincerely,
+{your_name}
+{selected_town}, NY"""
+
     else:
-        subject = f"Environmental Report: PFAS Near Industrial Site — {selected_town}"
-        body = f"Subject: {subject}\n\nDear {official_name},\n\nI am reporting evidence of PFAS migration from an industrial source in {selected_town}.\n\n{contaminant} has been detected at {pfas_level:.0f} ng/L — {multiplier:.0f}x New York's safe limit. Long Island's sandy aquifer means rapid contaminant migration.\n\nI request:\n1. Source investigation\n2. Groundwater monitoring well installation\n3. Photo-Fenton AOP feasibility assessment\n4. Notification of downstream well owners\n\nSincerely,\n{your_name}\n{selected_town}, NY"
+        # ── REPORT CONTAMINATION FLOW ──
+        st.markdown("### Step 3: Your situation and details")
+        site_type = st.radio("", [
+            "Resident near a contaminated well",
+            "Contacting my water district",
+            "Contamination near an industrial site"
+        ], horizontal=True, label_visibility="collapsed")
 
-    st.text_area("Your letter:", body, height=260, disabled=True)
+        col1, col2 = st.columns(2)
+        with col1:
+            your_name   = st.text_input("Your name", "Your Name")
+            pfas_level  = st.number_input("PFAS level detected (ng/L)", value=100.0, step=1.0)
+            contaminant = st.selectbox("Contaminant", ["PFOA", "PFOS", "PFNA", "General PFAS"])
+        with col2:
+            official_name  = st.text_input("Official / department", official["name"])
+            official_email = st.text_input("Official email", official["email"])
+            multiplier = pfas_level / 10.0
+
+        st.markdown("---")
+        st.markdown("### Step 4: Your letter")
+
+        if site_type == "Resident near a contaminated well":
+            subject = f"URGENT: PFAS Contamination Near My Home — {selected_town}"
+            body = f"""Subject: {subject}
+
+Dear {official_name},
+
+I am a resident of {selected_town} writing to request urgent action on PFAS contamination in our groundwater.
+
+Recent BOMARC site testing detected {contaminant} at {pfas_level:.0f} ng/L — {multiplier:.0f}x New York's 10 ng/L safe limit.
+
+I am requesting:
+1. Immediate public notification of affected residents
+2. Free water testing within 1 mile of affected wells
+3. A clear remediation timeline
+4. A public meeting within 30 days
+
+I urge evaluation of Photo-Fenton Advanced Oxidation, which destroys all PFAS variants including PFNA that carbon filters cannot remove.
+
+Sincerely,
+{your_name}
+{selected_town}, NY"""
+
+        elif site_type == "Contacting my water district":
+            subject = f"Request: PFAS Treatment Disclosure — {selected_town} Water District"
+            body = f"""Subject: {subject}
+
+Dear {official_name},
+
+I am requesting transparency on PFAS treatment in our water supply. {contaminant} has been detected at {pfas_level:.0f} ng/L ({multiplier:.0f}x the NYS safe limit).
+
+I request:
+1. Confirmation of current treatment technology (GAC vs. AOP)
+2. Removal efficiency data for PFOA, PFOS, and PFNA
+3. Timeline for upgrading to advanced oxidation if currently using GAC
+4. Funding plan for treatment upgrades
+
+Sincerely,
+{your_name}
+{selected_town}, NY"""
+
+        else:
+            subject = f"Environmental Report: PFAS Near Industrial Site — {selected_town}"
+            body = f"""Subject: {subject}
+
+Dear {official_name},
+
+I am reporting evidence of PFAS migration from an industrial source in {selected_town}.
+
+{contaminant} has been detected at {pfas_level:.0f} ng/L — {multiplier:.0f}x New York's safe limit. Long Island's sandy aquifer means rapid contaminant migration.
+
+I request:
+1. Source investigation
+2. Groundwater monitoring well installation
+3. Photo-Fenton AOP feasibility assessment
+4. Notification of downstream well owners
+
+Sincerely,
+{your_name}
+{selected_town}, NY"""
+
+    st.text_area("Your letter:", body, height=280, disabled=True)
     ca, cb = st.columns(2)
     with ca:
         if st.button("📋 Copy Letter", type="primary", use_container_width=True):
@@ -395,19 +465,17 @@ elif page == "📧 Report Contamination":
     col1, col2, col3 = st.columns(3)
     with col1: st.markdown(f"**📞 Call**\n\n{official['phone']}")
     with col2: st.markdown("**🌐 Report online**\n\n[NYSDEC Complaint](https://www.dec.ny.gov/chemical/8428.html)")
-    with col3: st.markdown("**📢 Share**\n\nSend this tool to your neighbors.")
+    with col3: st.markdown("**📢 Share**\n\nSend WellGuard to your neighbors.")
     st.caption("PFAS data: BOMARC Site Investigations 2020–2024, Suffolk County DOHS")
 
 # ════════════════════════════════════════
 # COMPARE TREATMENTS
 # ════════════════════════════════════════
 elif page == "📊 Compare Treatments":
-
     st.markdown("## 📊 Compare Treatment Options")
-    st.markdown("Adjust parameters below and run the simulation to compare Photo-Fenton AOP vs. GAC at your selected well.")
+    st.markdown("Adjust parameters and run the simulation to compare Photo-Fenton AOP vs. GAC.")
     st.markdown("---")
 
-    # ── ALL INPUTS INLINE AT TOP ──
     col_well, col_ph, col_temp = st.columns(3)
     with col_well:
         selected_well_name = st.selectbox("Well Site", list(BOMARC_WELLS.keys()))
@@ -420,8 +488,8 @@ elif page == "📊 Compare Treatments":
     with st.expander("⚙️ Advanced: Reagent Doses & Costs"):
         ac1, ac2, ac3 = st.columns(3)
         with ac1:
-            user_H2O2          = st.slider("H₂O₂ Dose (mM)", 1.0, 100.0, 10.0, 1.0)
-            user_Fe            = st.slider("Fe²⁺ Dose (µM)", 0.1, 50.0, 5.0, 0.1)
+            user_H2O2 = st.slider("H₂O₂ Dose (mM)", 1.0, 100.0, 10.0, 1.0)
+            user_Fe   = st.slider("Fe²⁺ Dose (µM)", 0.1, 50.0, 5.0, 0.1)
         with ac2:
             cost_H2O2_per_mmol = st.number_input("H₂O₂ cost ($/mmol)", value=0.014, format="%.4f")
             cost_Fe_per_mmol   = st.number_input("Fe²⁺ cost ($/mmol)", value=0.0557, format="%.4f")
@@ -436,20 +504,9 @@ elif page == "📊 Compare Treatments":
     if not run_sim_button:
         col_left, col_right = st.columns(2)
         with col_left:
-            st.markdown("""
-            **🟢 Photo-Fenton Advanced Oxidation**
-            Generates hydroxyl radicals (·OH) via iron + H₂O₂ + UV. Chemically **destroys** PFAS.
-            - Works on all PFAS including short-chain PFNA
-            - No hazardous waste stream
-            """)
+            st.markdown("**🟢 Photo-Fenton AOP** — Generates ·OH radicals via Fe + H₂O₂ + UV. Chemically destroys PFAS. Works on all variants. No hazardous waste.")
         with col_right:
-            st.markdown("""
-            **🟡 Granular Activated Carbon (GAC)**
-            PFAS **adsorb** onto carbon — not destroyed. Spent carbon = hazardous waste.
-            - Lower upfront cost, widely deployed
-            - Fails on short-chain PFAS (PFNA, PFBA)
-            - Replacement required every 8 months
-            """)
+            st.markdown("**🟡 GAC** — PFAS adsorb onto carbon (not destroyed). Spent carbon = hazardous waste every 8 months. Fails on short-chain PFAS.")
     else:
         costs = {
             "H2O2": cost_H2O2_per_mmol, "Fe": cost_Fe_per_mmol, "UV": cost_UV_per_min,
@@ -458,23 +515,56 @@ elif page == "📊 Compare Treatments":
         results = simulate_all_contaminants(well_info, user_pH, user_temp, user_H2O2, user_Fe, costs)
 
         st.markdown(f"### Results: {selected_well_name}")
+
+        # ── PER-COMPOUND RESULT CARDS ──
         cols = st.columns(len(results))
-        for col, (contaminant, data) in zip(cols, results.items()):
+        for col, (compound, d) in zip(cols, results.items()):
             with col:
-                mult = data["level_ng_l"] / well_info["safe_limit_ng_l"]
+                mult = d["level_ng_l"] / well_info["safe_limit_ng_l"]
+
+                # Determine winner dynamically
+                if d["fenton_wins_removal"] and d["fenton_wins_cost"]:
+                    winner_label = "✅ Photo-Fenton wins"
+                    winner_color = "#22c55e"
+                elif d["fenton_wins_removal"] and not d["fenton_wins_cost"]:
+                    winner_label = "⚡ Fenton more effective, GAC cheaper"
+                    winner_color = "#f59e0b"
+                elif not d["fenton_wins_removal"] and d["fenton_wins_cost"]:
+                    winner_label = "💰 GAC more effective, Fenton cheaper"
+                    winner_color = "#f59e0b"
+                else:
+                    winner_label = "✅ GAC wins"
+                    winner_color = "#f59e0b"
+
+                # Short-chain note
+                short_chain_note = ""
+                if d["gac_fails"]:
+                    short_chain_note = f"<div style='font-size:0.75rem;color:#ef4444;margin-top:6px;'>⚠️ GAC fails on {compound} — short-chain PFAS have poor affinity for carbon surfaces (~{d['gac_removal']:.0f}% adsorption)</div>"
+
                 st.markdown(f"""
-                <div style="background:#1e293b;border-radius:8px;padding:16px;color:white">
-                    <div style="font-size:1.1rem;font-weight:700">{contaminant}</div>
-                    <div style="color:#94a3b8;font-size:0.8rem">{data['level_ng_l']} ng/L ({mult:.0f}x limit)</div>
-                    <hr style="border-color:#334155;margin:10px 0">
-                    <div style="font-size:0.9rem">
-                        <b>Photo-Fenton:</b> {data['fenton_removal']:.0f}%<br>
-                        <b>GAC:</b> {data['gac_removal']:.0f}% {'❌ FAILS' if data['gac_fails'] else '✅'}
+                <div class="result-card" style="border-left:4px solid {winner_color}">
+                    <div style="font-size:1.1rem;font-weight:700">{compound}</div>
+                    <div style="color:#94a3b8;font-size:0.8rem;margin-bottom:8px">{d['level_ng_l']} ng/L ({mult:.0f}x limit)</div>
+                    <div style="font-size:0.85rem;margin-bottom:4px">
+                        <b>Photo-Fenton removal:</b> {d['fenton_removal']:.0f}%<br>
+                        <b>GAC removal:</b> {d['gac_removal']:.0f}%
                     </div>
+                    <div style="font-size:0.85rem;margin-bottom:4px">
+                        <b>Fenton cost/L:</b> ${d['fenton_cost']:.4f}<br>
+                        <b>GAC cost/L:</b> ${d['gac_cost']:.4f}
+                    </div>
+                    <div style="font-size:0.85rem;color:#94a3b8">
+                        <b>Fenton $/µg removed:</b> ${d['fenton_cost_per_ug']:.4f}<br>
+                        <b>GAC $/µg removed:</b> ${d['gac_cost_per_ug']:.4f}
+                    </div>
+                    <div style="margin-top:8px;font-size:0.8rem;font-weight:600;color:{winner_color}">{winner_label}</div>
+                    {short_chain_note}
                 </div>
                 """, unsafe_allow_html=True)
 
         st.markdown("---")
+
+        # ── BAR CHART ──
         compounds_list  = list(results.keys())
         fenton_removals = [results[c]["fenton_removal"] for c in compounds_list]
         gac_removals    = [results[c]["gac_removal"]    for c in compounds_list]
@@ -493,23 +583,49 @@ elif page == "📊 Compare Treatments":
             for bar in bars:
                 h = bar.get_height()
                 ax.text(bar.get_x()+bar.get_width()/2., h, f'{int(h)}%', ha='center', va='bottom', color='white', fontsize=9, fontweight='bold')
-        plt.tight_layout(); st.pyplot(fig)
+        plt.tight_layout()
+        st.pyplot(fig)
 
-        pfna = results.get("PFNA")
-        if pfna and pfna["gac_removal"] < 50:
-            st.error(f"⚠️ **GAC FAILS ON PFNA** — only {pfna['gac_removal']:.0f}% removal at this site. Photo-Fenton destroys {pfna['fenton_removal']:.0f}%.")
+        # ── OVERALL VERDICT ──
+        st.markdown("---")
+        fenton_wins_overall = sum(1 for d in results.values() if d["fenton_wins_removal"])
+        gac_wins_overall    = len(results) - fenton_wins_overall
+        any_gac_fail        = any(d["gac_fails"] for d in results.values())
 
+        if fenton_wins_overall >= gac_wins_overall:
+            verdict = f"**Photo-Fenton is more effective** for {fenton_wins_overall}/{len(results)} contaminants at this well."
+            if any_gac_fail:
+                verdict += " GAC structurally fails on short-chain PFAS present here — short-chain compounds have too little affinity for carbon to adsorb efficiently."
+            st.success(verdict)
+        else:
+            verdict = f"**GAC is more effective** for {gac_wins_overall}/{len(results)} contaminants at these conditions."
+            if any_gac_fail:
+                verdict += f" However, GAC fails on short-chain PFAS also present at this site."
+                st.warning(verdict)
+            else:
+                st.info(verdict)
+
+        # ── SUMMARY TABLE ──
         st.markdown("### Summary")
-        st.dataframe([{"Compound": c, "Level (ng/L)": f"{d['level_ng_l']:.1f}", "Fenton": f"{d['fenton_removal']:.0f}%", "GAC": f"{d['gac_removal']:.0f}%", "GAC Status": "❌ FAILS" if d["gac_fails"] else "✅"} for c, d in results.items()], use_container_width=True)
-
-        st.markdown("### Cost (per liter)")
-        col1, col2 = st.columns(2)
-        with col1: st.metric("Photo-Fenton", f"${np.mean([results[c]['fenton_cost'] for c in compounds_list]):.4f}/L")
-        with col2: st.metric("GAC", f"${np.mean([results[c]['gac_cost'] for c in compounds_list]):.4f}/L")
+        summary = []
+        for c, d in results.items():
+            summary.append({
+                "Compound":        c,
+                "Level (ng/L)":    f"{d['level_ng_l']:.1f}",
+                "Fenton Removal":  f"{d['fenton_removal']:.0f}%",
+                "GAC Removal":     f"{d['gac_removal']:.0f}%",
+                "Fenton $/L":      f"${d['fenton_cost']:.4f}",
+                "GAC $/L":         f"${d['gac_cost']:.4f}",
+                "Fenton $/µg":     f"${d['fenton_cost_per_ug']:.4f}",
+                "GAC $/µg":        f"${d['gac_cost_per_ug']:.4f}",
+                "Removal Winner":  "Photo-Fenton" if d["fenton_wins_removal"] else "GAC",
+                "Cost Winner":     "Photo-Fenton" if d["fenton_wins_cost"] else "GAC",
+            })
+        st.dataframe(summary, use_container_width=True)
 
         with st.expander("Conditions used"):
             arr = np.exp(-Ea_J/R_gas*(1/(user_temp+273.15)-1/T_REF))
-            st.markdown(f"pH: {user_pH} | Temp: {user_temp}°C | Arrhenius: {arr:.3f} | k_PFOA: 1.2×10⁷ (Hori 2004) | GAC PFOA/PFOS: 75/70% (EPA 2020) | GAC PFNA: 22% (Long 2023)")
+            st.markdown(f"pH: {user_pH} | Temp: {user_temp}°C | Arrhenius: {arr:.3f} | k_PFOA: 1.2×10⁷ (Hori 2004) | GAC PFOA: 75%, PFOS: 70%, PFNA: 22% (EPA 2020 / Long 2023)")
 
 # ════════════════════════════════════════
 # FAQs
@@ -518,16 +634,25 @@ elif page == "❓ FAQs":
     st.markdown("## ❓ FAQs")
     st.markdown("---")
     faqs = [
-        ("What is PFAS?", "Synthetic chemicals used in non-stick cookware, waterproof clothing, and military firefighting foam since the 1950s. Called 'forever chemicals' because they never break down in soil, water, or the body."),
-        ("Why is Long Island at risk?", "Long Island's sole-source aquifer sits under porous sandy soil — contaminants travel fast. Military installations like BOMARC used PFAS foam for decades, and it has been migrating into surrounding wells ever since."),
-        ("What is the BOMARC site?", "A Cold War-era anti-aircraft missile base in Westhampton, NY. Suffolk County DOHS confirmed PFAS contamination 10x+ above safe limits in 2020 and 2024 investigations."),
-        ("What are NYS safe limits?", "Effective 2023: PFOA, PFOS, PFNA, PFHxS, PFBS, and NEtFOSAA all at 10 ng/L. Among the strictest PFAS standards in the US."),
-        ("What is Photo-Fenton AOP?", "Iron + hydrogen peroxide + UV generates hydroxyl radicals that chemically destroy PFAS. Unlike carbon filtration, it works on short-chain PFAS like PFNA and produces no hazardous waste."),
-        ("Why does GAC fail on PFNA?", "Short-chain PFAS like PFNA have poor affinity for carbon surfaces — only ~22% removal vs. 75%+ for PFOA. A serious limitation at BOMARC-type mixed-contamination sites."),
-        ("Is my tap water safe?", "Public supply: your district tests it — request their Consumer Confidence Report. Private well: you must test yourself with a NY State certified lab."),
+        ("What is PFAS?", "Synthetic chemicals in non-stick cookware, waterproof clothing, and military firefighting foam since the 1950s. Called 'forever chemicals' because they never break down in soil, water, or the body."),
+        ("Why is Long Island at risk?", "Long Island's sole-source aquifer sits under porous sandy soil — contaminants travel fast. Military sites like BOMARC used PFAS foam for decades, and it has been migrating into surrounding wells ever since."),
+        ("What is the BOMARC site?", "A Cold War anti-aircraft missile base in Westhampton, NY. Suffolk County DOHS confirmed PFAS contamination 10x+ above safe limits in 2020 and 2024 investigations."),
+        ("What are NYS safe limits?", "Effective 2023: PFOA, PFOS, PFNA, PFHxS, PFBS, and NEtFOSAA all at 10 ng/L — among the strictest PFAS standards in the US."),
+        ("What is Photo-Fenton AOP?", "Fe + H₂O₂ + UV generates hydroxyl radicals that chemically destroy PFAS. Works on short-chain PFAS like PFNA that carbon filters cannot remove. No hazardous waste."),
+        ("Why does GAC fail on PFNA?", "Short-chain PFAS have poor affinity for carbon surfaces — only ~22% removal vs 75%+ for PFOA. A serious limitation at sites like BOMARC with mixed PFAS contamination."),
+        ("Is my tap water safe?", "Public supply: your district tests it — request their Consumer Confidence Report. Private well: test yourself with a NY State certified lab."),
         ("Who is responsible for BOMARC?", "The U.S. Army and NY Air National Guard are responsible parties. Suffolk County DOHS monitors groundwater. NYSDEC oversees remediation."),
     ]
     for q, a in faqs:
         with st.expander(f"**{q}**"):
             st.markdown(a)
     st.caption("Sources: Suffolk County DOHS, EPA, NYS DEC, USGS Finkelstein et al. 2025")
+
+# ════════════════════════════════════════
+# TESTING KITS
+# ════════════════════════════════════════
+elif page == "🧪 Testing Kits":
+    st.markdown("## 🧪 Get Your Water Tested")
+    st.markdown("---")
+    st.info("🔧 **Links to NY State-certified PFAS testing labs coming soon.**")
+    st.caption("NY State certified lab list: https://www.health.ny.gov/environmental/water/drinking/")
