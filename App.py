@@ -625,22 +625,22 @@ elif page == "🧪 Testing Kits":
         st.markdown("""
         **Step 1 — Decide what to test for**
         
-        - At minimum, request a PFAS panel covering the 6 NYS-regulated compounds: PFOA, PFOS, PFNA, PFHxS, PFBS, NEtFOSAA. \n
-        - If you live near a military site or industrial facility, request a 40-compound PFAS panel (EPA Method 533) for broader coverage.
-
+        At minimum, request a PFAS panel covering the 6 NYS-regulated compounds: PFOA, PFOS, PFNA, PFHxS, PFBS, NEtFOSAA. 
+        If you live near a military site or industrial facility, request a 40-compound PFAS panel (EPA Method 533) for broader coverage.
+ 
         **Step 2 — Choose a certified lab and order a kit**
         
-        - Use the lab directory above. Call or email the lab, tell them you need a private well PFAS test (mention EPA 533 or 537.1), 
-        and give your address. They will mail you HDPE sample bottles and a chain-of-custody form. \n- Cost: typically $150–$400 depending on panel size.
-
+        Use the lab directory above. Call or email the lab, tell them you need a private well PFAS test (mention EPA 533 or 537.1), 
+        and give your address. They will mail you HDPE sample bottles and a chain-of-custody form. Cost: typically $150–$400 depending on panel size.
+ 
         **Step 3 — Collect your sample**
         
-        - Follow the checklist exactly. The most common mistake is not flushing the tap long enough or sampling downstream of a filter.
-
+        Follow the checklist exactly. The most common mistake is not flushing the tap long enough or sampling downstream of a filter.
+ 
         **Step 4 — Ship and wait**
         
-        - Use overnight shipping with the ice pack provided. Most labs return results in 10–14 business days. \n- Results will come as a PDF showing ng/L concentrations for each compound.
-
+        Use overnight shipping with the ice pack provided. Most labs return results in 10–14 business days. Results will come as a PDF showing ng/L concentrations for each compound.
+ 
         **Step 5 — Interpret your results**
         
         Compare each value against NYS MCLs (all at 10 ng/L). If any compound exceeds 10 ng/L:
