@@ -573,13 +573,13 @@ elif page == "🧪 Testing Kits":
     st.markdown("If your home uses a private well, the government does **not** test your water. You must arrange testing yourself.")
     st.markdown("---")
 
-    kit_tab, checklist_tab, howto_tab = st.tabs(["🔬 Find a Lab", "📋 Sampling Checklist", "📖 How-To Guide"])
+    kit_tab, checklist_tab, howto_tab = st.tabs(["Find a Lab", "Sampling Checklist", "How-To Guide"])
 
     with kit_tab:
         st.markdown("### NYS ELAP-Certified Labs — Long Island Area")
         st.markdown("The following labs are NYS ELAP-certified for PFAS analysis and serve Long Island residents. All ship **HDPE collection bottles** to your address. Filter by your county:")
 
-        county_filter = st.radio("Filter by county:", ["All", "Nassau", "Suffolk", "Regional"], horizontal=True)
+        county_filter = st.radio("Filter by county:", ["All", "Nassau", "Suffolk"], horizontal=True)
 
         for lab in ELAP_LABS:
             if county_filter != "All" and county_filter not in lab["county"]:
@@ -597,7 +597,6 @@ elif page == "🧪 Testing Kits":
         st.markdown("---")
         st.markdown("**Can't find a lab near you?**")
         st.markdown("[Search the full NYS ELAP certified lab directory →](https://www.health.ny.gov/environmental/water/drinking/certified_lab/)")
-        st.caption("⚠️ Always verify ELAP certification directly with the lab before submitting samples for regulatory purposes.")
 
     with checklist_tab:
         st.markdown("### 📋 Pre-Sampling Checklist")
