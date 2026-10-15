@@ -438,8 +438,7 @@ elif page == "📊 Compare Treatments":
             ("k_hv_Fe","3.5 × 10⁻⁴ s⁻¹",      "Fe³⁺ photoreduction",        "De Laat & Gallard 1999"),
         ]
         st.dataframe([{"Symbol": s, "Value": v, "Reaction": r, "Source": src} for s,v,r,src in rc], use_container_width=True)
-        st.caption("⚠️ Validation pending. Results are for feasibility screening only — experimental confirmation required before use in treatment planning.")
-
+       
     else:
         col_well, col_ph, col_temp = st.columns(3)
         with col_well:
