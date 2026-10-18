@@ -140,7 +140,7 @@ page = st.session_state.page
 
 # ── KINETICS ──
 MW_PFOA=414.07; T_REF=298.15; Ea_J=50_000; R_gas=8.314
-k_PFOA=1.2e7; k_I=3e8; k_s=2e4; k_H2O2_scav=2.7e7
+k_PFOA=1.2e5; k_I=3e8; k_s=2e4; k_H2O2_scav=2.7e7
 k_Fe=2.3e8; k_hv_Fe=3.5e-4; k_hv_h2o2=5e-4
 
 def build_rate_constants(pH, temp_C):
@@ -281,7 +281,7 @@ elif page == "📋 The Issue":
     st.markdown("### 🔬 How Can It Be Treated?")
     t1, t2 = st.columns(2)
     with t1:
-        st.markdown('<div class="issue-card" style="border-left:4px solid #f59e0b;"><div style="font-weight:700;font-size:1.05rem;margin-bottom:8px;">🟡 Granular Activated Carbon (GAC) — Current Standard</div><div style="font-size:0.875rem;color:#94a3b8;line-height:1.6;">PFAS stick to carbon media — <b style="color:white">not destroyed</b>. Spent carbon becomes <b style="color:#ef4444">hazardous waste</b> every 8 months. Short-chain PFAS like PFNA barely adsorb (~22% removal).</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="issue-card" style="border-left:4px solid #f59e0b;"><div style="font-weight:700;font-size:1.05rem;margin-bottom:8px;">🟡 Granular Activated Carbon (GAC) — Current Standard</div><div style="font-size:0.875rem;color:#94a3b8;line-height:1.6;">PFAS stick to carbon media — <b style="color:white">not destroyed</b>. Spent carbon becomes <b style="color:#ef4444">hazardous waste</b> every 8 months. Short-chain PFAS like PFBA barely adsorb (~22% removal).</div></div>', unsafe_allow_html=True)
     with t2:
         st.markdown('<div class="issue-card" style="border-left:4px solid #22c55e;"><div style="font-weight:700;font-size:1.05rem;margin-bottom:8px;">🟢 Photo-Fenton AOP — Emerging Alternative</div><div style="font-size:0.875rem;color:#94a3b8;line-height:1.6;">Fe + H₂O₂ + UV generates hydroxyl radicals that <b style="color:white">chemically destroy</b> PFAS — every C–F bond. Works on all PFAS variants. <b style="color:#22c55e">No hazardous waste. No replacement cycle.</b> Developed in part at CUNY MEC Vittadello Lab.</div></div>', unsafe_allow_html=True)
     st.markdown("---")
@@ -343,7 +343,7 @@ elif page == "📧 Report Contamination":
         with col1:
             your_name   = st.text_input("Your name", "Your Name")
             pfas_level  = st.number_input("PFAS level detected (ng/L)", value=100.0, step=1.0)
-            contaminant = st.selectbox("Contaminant", ["PFOA", "PFOS", "PFNA", "General PFAS"])
+            contaminant = st.selectbox("Contaminant", ["PFOA", "PFOS", "PFBA", "General PFAS"])
         with col2:
             official_name  = st.text_input("Official / department", official["name"])
             official_email = st.text_input("Official email", official["email"])
@@ -353,10 +353,10 @@ elif page == "📧 Report Contamination":
 
         if site_type == "Resident near a contaminated well":
             subject = f"URGENT: PFAS Contamination Near My Home — {selected_town}"
-            body = f"Subject: {subject}\n\nDear {official_name},\n\nI am a resident of {selected_town} requesting urgent action on PFAS contamination in our groundwater.\n\nRecent BOMARC site testing detected {contaminant} at {pfas_level:.0f} ng/L — {multiplier:.0f}x New York's 10 ng/L safe limit.\n\nI am requesting:\n1. Immediate public notification of affected residents\n2. Free water testing within 1 mile of affected wells\n3. A clear remediation timeline\n4. A public meeting within 30 days\n\nI urge evaluation of Photo-Fenton Advanced Oxidation, which destroys all PFAS variants including PFNA that carbon filters cannot remove.\n\nSincerely,\n{your_name}\n{selected_town}, NY"
+            body = f"Subject: {subject}\n\nDear {official_name},\n\nI am a resident of {selected_town} requesting urgent action on PFAS contamination in our groundwater.\n\nRecent BOMARC site testing detected {contaminant} at {pfas_level:.0f} ng/L — {multiplier:.0f}x New York's 10 ng/L safe limit.\n\nI am requesting:\n1. Immediate public notification of affected residents\n2. Free water testing within 1 mile of affected wells\n3. A clear remediation timeline\n4. A public meeting within 30 days\n\nI urge evaluation of Photo-Fenton Advanced Oxidation, which destroys all PFAS variants including PFBA that carbon filters cannot remove.\n\nSincerely,\n{your_name}\n{selected_town}, NY"
         elif site_type == "Contacting my water district":
             subject = f"Request: PFAS Treatment Disclosure — {selected_town} Water District"
-            body = f"Subject: {subject}\n\nDear {official_name},\n\nI am requesting transparency on PFAS treatment in our water supply. {contaminant} has been detected at {pfas_level:.0f} ng/L ({multiplier:.0f}x the NYS safe limit).\n\nI request:\n1. Confirmation of current treatment technology (GAC vs. AOP)\n2. Removal efficiency data for PFOA, PFOS, and PFNA\n3. Timeline for upgrading to advanced oxidation if currently using GAC\n4. Funding plan for treatment upgrades\n\nSincerely,\n{your_name}\n{selected_town}, NY"
+            body = f"Subject: {subject}\n\nDear {official_name},\n\nI am requesting transparency on PFAS treatment in our water supply. {contaminant} has been detected at {pfas_level:.0f} ng/L ({multiplier:.0f}x the NYS safe limit).\n\nI request:\n1. Confirmation of current treatment technology (GAC vs. AOP)\n2. Removal efficiency data for PFOA, PFOS, and PFBA\n3. Timeline for upgrading to advanced oxidation if currently using GAC\n4. Funding plan for treatment upgrades\n\nSincerely,\n{your_name}\n{selected_town}, NY"
         else:
             subject = f"Environmental Report: PFAS Near Industrial Site — {selected_town}"
             body = f"Subject: {subject}\n\nDear {official_name},\n\nI am reporting evidence of PFAS migration from an industrial source in {selected_town}.\n\n{contaminant} has been detected at {pfas_level:.0f} ng/L — {multiplier:.0f}x New York's safe limit. Long Island's sandy aquifer means rapid contaminant migration.\n\nI request:\n1. Source investigation\n2. Groundwater monitoring well installation\n3. Photo-Fenton AOP feasibility assessment\n4. Notification of downstream well owners\n\nSincerely,\n{your_name}\n{selected_town}, NY"
@@ -394,7 +394,7 @@ elif page == "📊 Compare Treatments":
         species = [
             ("H₂O₂", "Hydrogen peroxide — the oxidant supply"),
             ("·OH",   "Hydroxyl radical — the active PFAS-destroying species"),
-            ("PFAS",  "Target contaminant (PFOA, PFOS, or PFNA)"),
+            ("PFAS",  "Target contaminant (PFOA, PFOS, or PFBA)"),
             ("I",     "Lumped intermediate degradation products"),
             ("Fe²⁺",  "Ferrous iron — Fenton catalyst"),
             ("Fe³⁺",  "Ferric iron — regenerated by UV photoreduction"),
@@ -423,7 +423,7 @@ elif page == "📊 Compare Treatments":
 
         **pH:** k_f is penalized above pH 3 via an empirical iron-speciation correction — at high pH, Fe²⁺ precipitates as Fe(OH)₃ and is less available to react.
 
-        **GAC removal:** Literature constants per compound — PFOA 75%, PFOS 70%, PFNA 22% (EPA 2020; Long et al. 2023). PFNA's low removal reflects poor short-chain affinity for activated carbon surfaces.
+        **GAC removal:** Literature constants per compound — PFOA 75%, PFOS 70%, PFBA 22% (EPA 2020; Long et al. 2023). PFBA's low removal reflects poor short-chain affinity for activated carbon surfaces.
         """)
 
         st.markdown("---")
@@ -533,7 +533,7 @@ elif page == "📊 Compare Treatments":
             st.dataframe([{"Compound": c, "Level (ng/L)": f"{d['level_ng_l']:.1f}", "Fenton": f"{d['fenton_removal']:.0f}%", "GAC": f"{d['gac_removal']:.0f}%", "Fenton $/L": f"${d['fenton_cost']:.4f}", "GAC $/L": f"${d['gac_cost']:.4f}", "Fenton $/µg": f"${d['fenton_cost_per_ug']:.4f}", "GAC $/µg": f"${d['gac_cost_per_ug']:.4f}", "Removal Winner": "Photo-Fenton" if d["fenton_wins_removal"] else "GAC", "Cost Winner": "Photo-Fenton" if d["fenton_wins_cost"] else "GAC"} for c, d in results.items()], use_container_width=True)
             with st.expander("Conditions used"):
                 arr = np.exp(-Ea_J/R_gas*(1/(user_temp+273.15)-1/T_REF))
-                st.markdown(f"pH: {user_pH} | Temp: {user_temp}°C | Arrhenius: {arr:.3f} | k_PFOA: 1.2×10⁷ (Hori 2004) | GAC PFOA: 75%, PFOS: 70%, PFNA: 22% (EPA 2020 / Long 2023)")
+                st.markdown(f"pH: {user_pH} | Temp: {user_temp}°C | Arrhenius: {arr:.3f} | k_PFOA: 1.2×10⁷ (Hori 2004) | GAC PFOA: 75%, PFOS: 70%, PFBA: 22% (EPA 2020 / Long 2023)")
 
 # ════════════════════════════════════════
 # FAQs
@@ -551,9 +551,9 @@ elif page == "❓ FAQs":
         ("What is the BOMARC site and why does it matter?",
          "The BOMARC missile site in Westhampton, NY was a Cold War-era Air Force installation where PFAS-containing firefighting foam (AFFF) was used for decades. Suffolk County DOHS investigations in 2020 and 2024 found PFAS levels up to 10x above NYS safe limits in surrounding groundwater monitoring wells. The contamination plume is migrating through Long Island's sole-source aquifer."),
         ("What are New York's safe limits for PFAS?",
-         "Effective 2023, NYS MCLs: PFOA 10 ng/L, PFOS 10 ng/L, PFNA 10 ng/L, PFHxS 10 ng/L, PFBS 10 ng/L, NEtFOSAA 10 ng/L. These are among the strictest PFAS standards in the US and stricter than the 2024 EPA federal MCLs."),
+         "Effective 2023, NYS MCLs: PFOA 10 ng/L, PFOS 10 ng/L, PFBA 10 ng/L, PFHxS 10 ng/L, PFBS 10 ng/L, NEtFOSAA 10 ng/L. These are among the strictest PFAS standards in the US and stricter than the 2024 EPA federal MCLs."),
         ("Why does carbon filtration fail on some PFAS?",
-         "Granular Activated Carbon (GAC) works by adsorption — PFAS molecules stick to the carbon surface. Long-chain PFAS like PFOA and PFOS adsorb well (~70–75% removal). But short-chain PFAS like PFNA have lower molecular weight and weaker van der Waals interactions with the carbon, yielding only ~22% removal. BOMARC site contamination includes multiple PFAS types, making GAC alone insufficient."),
+         "Granular Activated Carbon (GAC) works by adsorption — PFAS molecules stick to the carbon surface. Long-chain PFAS like PFOA and PFOS adsorb well (~70–75% removal). But short-chain PFAS like PFBA have lower molecular weight and weaker van der Waals interactions with the carbon, yielding only ~22% removal. BOMARC site contamination includes multiple PFAS types, making GAC alone insufficient."),
         ("Can I sue for PFAS contamination?",
          "Potentially. If contamination traces to a specific responsible party (e.g., military, manufacturer, industrial operator), you may have tort claims. Several class action lawsuits have been filed nationally against 3M and DuPont, and some have resulted in major settlements. Contact a private environmental attorney or the NYSDEC for guidance specific to your situation. WellGuard cannot provide legal advice."),
         ("What is Photo-Fenton Advanced Oxidation?",
@@ -624,7 +624,7 @@ elif page == "🧪 Testing Kits":
         st.markdown("""
         **Step 1 — Decide what to test for**
         
-        At minimum, request a PFAS panel covering the 6 NYS-regulated compounds: PFOA, PFOS, PFNA, PFHxS, PFBS, NEtFOSAA. 
+        At minimum, request a PFAS panel covering the 6 NYS-regulated compounds: PFOA, PFOS, PFBA, PFHxS, PFBS, NEtFOSAA. 
         If you live near a military site or industrial facility, request a 40-compound PFAS panel (EPA Method 533) for broader coverage.
  
         **Step 2 — Choose a certified lab and order a kit**
