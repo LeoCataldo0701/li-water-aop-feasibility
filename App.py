@@ -283,7 +283,7 @@ elif page == "📋 The Issue":
     with t1:
         st.markdown('<div class="issue-card" style="border-left:4px solid #f59e0b;"><div style="font-weight:700;font-size:1.05rem;margin-bottom:8px;">🟡 Granular Activated Carbon (GAC) — Current Standard</div><div style="font-size:0.875rem;color:#94a3b8;line-height:1.6;">PFAS stick to carbon media — <b style="color:white">not destroyed</b>. Spent carbon becomes <b style="color:#ef4444">hazardous waste</b> every 8 months. Short-chain PFAS like PFBA barely adsorb (~22% removal).</div></div>', unsafe_allow_html=True)
     with t2:
-        st.markdown('<div class="issue-card" style="border-left:4px solid #22c55e;"><div style="font-weight:700;font-size:1.05rem;margin-bottom:8px;">🟢 Photo-Fenton AOP — Emerging Alternative</div><div style="font-size:0.875rem;color:#94a3b8;line-height:1.6;">Fe + H₂O₂ + UV generates hydroxyl radicals that <b style="color:white">react with PFAS and generate little waste, unsafe_allow_html=True)
+        st.markdown('<div class="issue-card" style="border-left:4px solid #22c55e;"><div style="font-weight:700;font-size:1.05rem;margin-bottom:8px;">🟢 Photo-Fenton AOP — Emerging Alternative</div><div style="font-size:0.875rem;color:#94a3b8;line-height:1.6;">Fe + H₂O₂ + UV generates hydroxyl radicals that <b style="color:white">react with PFAS and generate little waste.</div></div>', unsafe_allow_html=True)
     st.markdown("---")
 
     st.markdown("### 📰 In the News")
