@@ -118,7 +118,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 if "page" not in st.session_state:
-    st.session_state.page = "🏠 Home"
+    st.session_state.page = "Home"
 
 def go(p):
     st.session_state.page = p
@@ -127,10 +127,10 @@ def go(p):
 with st.sidebar:
     st.markdown("### 💧 WellGuard")
     st.markdown("*Long Island Water Safety*")
-    if st.button("🏠 Home", use_container_width=True):
-        go("🏠 Home")
+    if st.button("Home", use_container_width=True):
+        go("Home")
     st.markdown("---")
-    for label in ["📋 The Issue", "📧 Report Contamination", "📊 Compare Treatments", "❓ FAQs", "🧪 Testing Kits"]:
+    for label in ["The Issue", "📧 Report Contamination", "Compare Treatments", "FAQs", "Testing Kits"]:
         if st.button(label, use_container_width=True, key=f"nav_{label}"):
             go(label)
     st.markdown("---")
@@ -200,7 +200,7 @@ def simulate_all_contaminants(well_info, pH, temp, H2O2, Fe, costs):
 # ════════════════════════════════════════
 # HOME
 # ════════════════════════════════════════
-if page == "🏠 Home":
+if page == "Home":
     st.markdown("""
     <div style="text-align:center;padding:60px 20px 32px 20px;">
         <div style="font-size:0.85rem;color:#94a3b8;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px;">
@@ -218,10 +218,10 @@ if page == "🏠 Home":
 
     c1, c2, c3, c4 = st.columns(4)
     for col, icon, label, target in [
-        (c1, "📧", "Connect with a\nLocal Official",        "📧 Report Contamination"),
-        (c2, "📊", "Determine Feasible\nTreatment Options", "📊 Compare Treatments"),
-        (c3, "📋", "Learn More\nAbout the Issue",           "📋 The Issue"),
-        (c4, "🧪", "Check Your\nOwn Property",              "🧪 Testing Kits"),
+        (c1, "", "Connect with a\nLocal Official",        "📧 Report Contamination"),
+        (c2, "", "Determine Feasible\nTreatment Options", "📊 Compare Treatments"),
+        (c3, "", "Learn More\nAbout the Issue",           "📋 The Issue"),
+        (c4, "", "Check Your\nOwn Property",              "🧪 Testing Kits"),
     ]:
         with col:
             st.markdown(f'<div class="action-card"><div class="icon">{icon}</div><div class="label">{label}</div></div>', unsafe_allow_html=True)
@@ -234,39 +234,39 @@ if page == "🏠 Home":
 # ════════════════════════════════════════
 # THE ISSUE
 # ════════════════════════════════════════
-elif page == "📋 The Issue":
+elif page == "The Issue":
     st.markdown("## What's Happening to Long Island's Water?")
     st.markdown("---")
 
-    st.markdown("### 🧪 What are PFAS?")
+    st.markdown("### What are PFAS?")
     col_a, col_b = st.columns([1, 2])
     with col_a:
         st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/PFOA_structure.svg/320px-PFOA_structure.svg.png", caption="PFOA — a common PFAS compound", use_container_width=True)
     with col_b:
         st.markdown("""
-        **Per- and polyfluoroalkyl substances (PFAS)** are man-made chemicals used since the 1950s in non-stick cookware, waterproof clothing, and — critically — **military firefighting foam**.
+        **Per- and polyfluoroalkyl substances (PFAS)**: man-made chemicals used in cookware, clothing, manufacturing plants, and **military firefighting foam**.
 
-        The carbon-fluorine bond is the strongest in organic chemistry. PFAS never break down in soil, water, or the human body — hence **"forever chemicals."**
+        The C-F bond is the strongest in organic chemistry. PFAS never break down in soil, water, or the human body — hence **"forever chemicals."**
 
-        > *Long Island's contamination source: AFFF firefighting foam used at the BOMARC missile site in Westhampton.*
+        > *Long Island's contamination source: Firefighting foam used at the BOMARC missile site & past industrial sites.*
         """)
     st.markdown("---")
 
     st.markdown("### ⚠️ How are they harmful?")
     h1, h2, h3 = st.columns(3)
     for col, icon, title, text in [
-        (h1, "🎗️", "Cancer Risk",       "Linked to kidney, testicular, and thyroid cancers at prolonged exposures above safe limits."),
-        (h2, "🧒", "Child Development", "Disrupts hormones and immune development. Infants are most vulnerable via breast milk and formula."),
-        (h3, "🫀", "Heart & Liver",     "Elevated cholesterol and liver enzyme abnormalities even at low chronic doses."),
+        (h1, "", "Cancer Risk",       "Linked to kidney, testicular, and thyroid cancers at prolonged exposures above safe limits."),
+        (h2, "", "Child Development", "Hormone disruptor and immune system inhibiter. Most detrimental to young children"),
+        (h3, "", "Heart & Liver",     "Elevated cholesterol and liver enzyme abnormalities."),
     ]:
         with col:
             st.markdown(f'<div class="issue-card" style="border-top:3px solid #ef4444;text-align:center;"><div style="font-size:2rem;">{icon}</div><div style="font-weight:700;margin:8px 0 6px 0;">{title}</div><div style="font-size:0.85rem;color:#94a3b8;line-height:1.5;">{text}</div></div>', unsafe_allow_html=True)
     st.markdown("---")
 
-    st.markdown("### 🗺️ What Happened on Long Island?")
+    st.markdown("### What Happened on Long Island?")
     col_li1, col_li2 = st.columns([3, 2])
     with col_li1:
-        st.markdown("Long Island's **sole-source aquifer** supplies 3 million people with no backup. Sandy glacial soil lets contaminants reach groundwater fast.\n\nThe **BOMARC missile site** (Westhampton, 1950s–70s) used PFAS firefighting foam that soaked into the soil for decades. Suffolk County DOHS confirmed contamination **up to 10x above New York's safe limit** in 2020 and 2024.")
+        st.markdown("Long Island's **sole-source aquifer** supplies 3 million people. LI soil profile lets contaminants reach groundwater fast.\n\nThe **BOMARC missile site** (Westhampton, 1950s–70s) used PFAS firefighting foam that soaked into the soil for decades. Suffolk County confirmed contamination **up to 10x above New York's safe limit** in 2020 and 2024.")
         w1, w2, w3 = st.columns(3)
         for col, well in zip([w1, w2, w3], list(BOMARC_WELLS.values())):
             with col:
@@ -278,7 +278,7 @@ elif page == "📋 The Issue":
         st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/CIM-10_Bomarc_at_March_AFB_Museum.jpg/320px-CIM-10_Bomarc_at_March_AFB_Museum.jpg", caption="BOMARC missile — PFAS foam used at Westhampton launch site", use_container_width=True)
     st.markdown("---")
 
-    st.markdown("### 🔬 How Can It Be Treated?")
+    st.markdown("### How Can It Be Treated?")
     t1, t2 = st.columns(2)
     with t1:
         st.markdown('<div class="issue-card" style="border-left:4px solid #f59e0b;"><div style="font-weight:700;font-size:1.05rem;margin-bottom:8px;">🟡 Granular Activated Carbon (GAC) — Current Standard</div><div style="font-size:0.875rem;color:#94a3b8;line-height:1.6;">PFAS stick to carbon media — <b style="color:white">not destroyed</b>. Spent carbon becomes <b style="color:#ef4444">hazardous waste</b> every 8 months. Short-chain PFAS like PFBA barely adsorb (~22% removal).</div></div>', unsafe_allow_html=True)
@@ -286,7 +286,7 @@ elif page == "📋 The Issue":
         st.markdown('<div class="issue-card" style="border-left:4px solid #22c55e;"><div style="font-weight:700;font-size:1.05rem;margin-bottom:8px;">🟢 Photo-Fenton AOP — Emerging Alternative</div><div style="font-size:0.875rem;color:#94a3b8;line-height:1.6;">Fe + H₂O₂ + UV generates hydroxyl radicals that <b style="color:white">react with PFAS and generate little waste.</div></div>', unsafe_allow_html=True)
     st.markdown("---")
 
-    st.markdown("### 📰 In the News")
+    st.markdown("### In the News")
     n1, n2, n3 = st.columns(3)
     for col, src, hl, url in [
         (n1, "NEWSDAY", '"PFAS Detected in Long Island Wells Near Military Sites"', "https://www.newsday.com/long-island/environment/pfas-water-contamination-suffolk-nassau-long-island-dvbkxn71"),
@@ -300,8 +300,8 @@ elif page == "📋 The Issue":
 # ════════════════════════════════════════
 # REPORT CONTAMINATION
 # ════════════════════════════════════════
-elif page == "📧 Report Contamination":
-    st.markdown("## 📧 Connect with Your Local Officials")
+elif page == "Report Contamination":
+    st.markdown("## Connect with Your Local Officials")
     st.markdown("---")
 
     st.markdown("### Step 1: What describes your situation?")
@@ -364,8 +364,8 @@ elif page == "📧 Report Contamination":
     st.text_area("Your letter:", body, height=280, disabled=True)
     ca, cb = st.columns(2)
     with ca:
-        if st.button("📋 Copy Letter", type="primary", use_container_width=True):
-            st.success("✅ Copy from the box above.")
+        if st.button("Copy Letter", type="primary", use_container_width=True):
+            st.success("Copy from the box above.")
             st.code(body, language="text")
     with cb:
         st.markdown(f"[📧 Open in Email Client](mailto:{official_email}?subject={subject})")
@@ -373,27 +373,27 @@ elif page == "📧 Report Contamination":
     col1, col2, col3 = st.columns(3)
     with col1: st.markdown(f"**📞 Call**\n\n{official['phone']}")
     with col2: st.markdown("**🌐 Report online**\n\n[NYSDEC Complaint](https://www.dec.ny.gov/chemical/8428.html)")
-    with col3: st.markdown("**📢 Share**\n\nSend WellGuard to your neighbors.")
+    with col3: st.markdown("**Share**\n\nSend WellGuard to your neighbors.")
     st.caption("PFAS data: BOMARC Site Investigations 2020–2024, Suffolk County DOHS")
 
 # ════════════════════════════════════════
 # COMPARE TREATMENTS
 # ════════════════════════════════════════
-elif page == "📊 Compare Treatments":
-    st.markdown("## 📊 Compare Treatment Options")
+elif page == "Compare Treatments":
+    st.markdown("## Compare Treatment Options")
     st.markdown("---")
 
-    sub = st.radio("", ["▶ Run Simulation", "🔢 About the Math"], horizontal=True, label_visibility="collapsed")
+    sub = st.radio("", ["▶ Run Simulation", "About the Math"], horizontal=True, label_visibility="collapsed")
     st.markdown("---")
 
-    if sub == "🔢 About the Math":
-        st.markdown("### 🔢 Model Overview")
-        st.markdown("The simulation solves a **6-species ODE system** over 2 hours using SciPy's stiff BDF integrator.")
+    if sub == "About the Math":
+        st.markdown("### Model Overview")
+        st.markdown("The simulation solves a **6-species ODE system** over 2 hours using SciPy's stiff BDF solver.")
 
         st.markdown("#### Species tracked")
         species = [
-            ("H₂O₂", "Hydrogen peroxide — the oxidant supply"),
-            ("·OH",   "Hydroxyl radical — the active PFAS-destroying species"),
+            ("H₂O₂", "Hydrogen peroxide — Fenton oxidizing reagent"),
+            ("·OH",   "Hydroxyl radical — PFAS-destroying species"),
             ("PFAS",  "Target contaminant (PFOA, PFOS, or PFBA)"),
             ("I",     "Lumped intermediate degradation products"),
             ("Fe²⁺",  "Ferrous iron — Fenton catalyst"),
@@ -421,15 +421,15 @@ elif page == "📊 Compare Treatments":
         st.markdown("""
         **Temperature (Arrhenius):** k_f is corrected from 25°C literature values using Ea = 50 kJ/mol (De Laat & Gallard 1999).
 
-        **pH:** k_f is penalized above pH 3 via an empirical iron-speciation correction — at high pH, Fe²⁺ precipitates as Fe(OH)₃ and is less available to react.
+        **pH:** k_f is corrected above pH 3: at high pH, Fe²⁺ precipitates and is less available to react.
 
-        **GAC removal:** Literature constants per compound — PFOA 75%, PFOS 70%, PFBA 22% (EPA 2020; Long et al. 2023). PFBA's low removal reflects poor short-chain affinity for activated carbon surfaces.
+        **GAC removal:** Literature constants per compound — PFOA 75%, PFOS 70%, PFBA 22% (EPA 2020; Long et al. 2023). PFBA's low removal reflects poor short-chain affinity for carbon adsorption
         """)
 
         st.markdown("---")
         st.markdown("#### Rate constants used")
         rc = [
-            ("k_PFAS", "1.2 × 10⁷ L/(mol·s)", "OH + PFOA", "Hori et al. 2004"),
+            ("k_PFAS", "1 × 10⁷ L/(mol·s)", "OH + PFOA", "Hori et al. 2004"),
             ("k_I",    "3.0 × 10⁸ L/(mol·s)", "OH + intermediates (lumped)", "estimated"),
             ("k_s",    "2.0 × 10⁴ s⁻¹",       "background OH scavenging",    "field estimate"),
             ("k_scav", "2.7 × 10⁷ L/(mol·s)", "OH + H₂O₂",                  "Buxton et al. 1988"),
@@ -468,9 +468,9 @@ elif page == "📊 Compare Treatments":
         if not run_sim_button:
             col_left, col_right = st.columns(2)
             with col_left:
-                st.markdown("**🟢 Photo-Fenton AOP** — Generates ·OH radicals via Fe + H₂O₂ + UV. Chemically destroys PFAS. Works on all variants. No hazardous waste.")
+                st.markdown("**🟢 Photo-Fenton AOP**: Generates ·OH radicals via Fe + H₂O₂ + UV. Chemically destroys PFAS. Little hazardous hazardous waste.")
             with col_right:
-                st.markdown("**🟡 GAC** — PFAS adsorb onto carbon (not destroyed). Spent carbon = hazardous waste every 8 months. Fails on short-chain PFAS.")
+                st.markdown("**🟡 GAC**: PFAS adsorb onto carbon (not destroyed). Spent carbon = hazardous waste. Fails on short-chain PFAS.")
         else:
             costs = {"H2O2": cost_H2O2_per_mmol, "Fe": cost_Fe_per_mmol, "UV": cost_UV_per_min, "gac_lb": gac_cost_lb, "gac_disposal": gac_disposal_cost}
             results = simulate_all_contaminants(well_info, user_pH, user_temp, user_H2O2, user_Fe, costs)
@@ -485,7 +485,7 @@ elif page == "📊 Compare Treatments":
                     elif d["fenton_wins_removal"]:
                         wl, wc = "⚡ Fenton more effective, GAC cheaper", "#f59e0b"
                     elif d["fenton_wins_cost"]:
-                        wl, wc = "💰 GAC more effective, Fenton cheaper", "#f59e0b"
+                        wl, wc = "GAC more effective, Fenton cheaper", "#f59e0b"
                     else:
                         wl, wc = "✅ GAC wins", "#f59e0b"
                     sc = f'<div style="font-size:0.75rem;color:#ef4444;margin-top:6px;">⚠️ GAC fails on {compound} — short-chain PFAS adsorb poorly onto carbon (~{d["gac_removal"]:.0f}%)</div>' if d["gac_fails"] else ""
@@ -522,7 +522,7 @@ elif page == "📊 Compare Treatments":
             any_fail = any(d["gac_fails"] for d in results.values())
             if fw >= gw:
                 v = f"**Photo-Fenton is more effective** for {fw}/{len(results)} contaminants at this well."
-                if any_fail: v += " GAC structurally fails on short-chain PFAS — these compounds have too little affinity for carbon to adsorb efficiently."
+                if any_fail: v += " GAC fails to adsorb short-chain PFAS"
                 st.success(v)
             else:
                 v = f"**GAC is more effective** for {gw}/{len(results)} contaminants at these conditions."
@@ -567,9 +567,9 @@ elif page == "❓ FAQs":
 # ════════════════════════════════════════
 # TESTING KITS
 # ════════════════════════════════════════
-elif page == "🧪 Testing Kits":
-    st.markdown("## 🧪 Get Your Private Well Tested for PFAS")
-    st.markdown("If your home uses a private well, the government does **not** test your water. You must arrange testing yourself.")
+elif page == "Testing Kits":
+    st.markdown("## Get Your Private Well Tested for PFAS")
+    st.markdown("If your home uses a private well, the government does **not** test your water. Arrange testing yourself.")
     st.markdown("---")
 
     kit_tab, checklist_tab, howto_tab = st.tabs(["Find a Lab", "Sampling Checklist", "How-To Guide"])
@@ -598,7 +598,7 @@ elif page == "🧪 Testing Kits":
         st.markdown("[Search the full NYS ELAP certified lab directory →](https://www.health.ny.gov/environmental/water/drinking/certified_lab/)")
 
     with checklist_tab:
-        st.markdown("### 📋 Pre-Sampling Checklist")
+        st.markdown("### Pre-Sampling Checklist")
         st.markdown("Complete all steps before collecting your sample. Incorrect collection voids results.")
 
         steps = [
@@ -615,7 +615,7 @@ elif page == "🧪 Testing Kits":
             with st.expander(f"**{i}. {title}**"):
                 st.markdown(desc)
 
-        st.info("💡 **Tip:** Sample in the morning before anyone uses water, for the most representative well measurement.")
+        st.info("**Tip:** Sample in the morning before anyone uses water, for the most representative well measurement.")
 
     with howto_tab:
         st.markdown("How to Test Your Well From Home")
