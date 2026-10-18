@@ -140,7 +140,7 @@ page = st.session_state.page
 
 # ── KINETICS ──
 MW_PFOA=414.07; T_REF=298.15; Ea_J=50_000; R_gas=8.314
-k_PFOA=1.2e6; k_I=3e8; k_s=2e4; k_H2O2_scav=2.7e7
+k_PFOA=1e7; k_I=3e8; k_s=2e4; k_H2O2_scav=2.7e7
 k_Fe=2.3e8; k_hv_Fe=3.5e-4; k_hv_h2o2=5e-4
 
 def build_rate_constants(pH, temp_C):
