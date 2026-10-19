@@ -312,6 +312,7 @@ if page == "Home":
         </div>
     </div>
     """, unsafe_allow_html=True)
+    st.info("Data Notice: Nassau County contamination data retrieval is in progress")
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.caption("Sources: BOMARC Site Investigations 2020–2024, Suffolk County DOHS | USGS Finkelstein et al. 2025")
