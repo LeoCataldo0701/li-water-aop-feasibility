@@ -39,11 +39,11 @@ TOWN_OFFICIALS = {
 }
 
 ELAP_LABS = [
-    {"name": "TestAmerica / Pace Analytical", "address": "100 Woodbury Rd, Woodbury, NY 11797", "county": "Nassau", "phone": "(516) 364-8040", "url": "https://www.pacelabs.com", "pfas_panel": "EPA 533 / 537.1", "notes": "Ships HDPE bottles. Accepts private well samples."},
+    {"name": "Pace Analytical Services, LLC", "address": "575 Broad Hollow Rd, Melville, NY 11747", "county": "Nassau", "phone": "(516) 370-6000", "url": "https://www.pacelabs.com/analytical-environmental/pfas/", "pfas_panel": "EPA 533 / 537.1", "notes": "Ships HDPE bottles. Accepts private well samples."},
     {"name": "Suffolk County Public Health Lab", "address": "360 Yaphank Ave, Yaphank, NY 11980", "county": "Suffolk", "phone": "(631) 852-5999", "url": "https://www.suffolkcountyny.gov/Departments/Health-Services/Public-Health-Laboratory", "pfas_panel": "EPA 537.1", "notes": "County residents may qualify for subsidized testing."},
-    {"name": "Chemtech-Ford Laboratories", "address": "1750 New Highway, Farmingdale, NY 11735", "county": "Nassau/Suffolk", "phone": "(631) 249-8088", "url": "https://www.chemtechford.com", "pfas_panel": "EPA 533 / 537.1", "notes": "Local Long Island lab. Ships HDPE bottles."},
-    {"name": "Nelson Environmental Consulting & Testing", "address": "30 Oser Ave Suite 7, Hauppauge, NY 11788", "county": "Suffolk", "phone": "(631) 231-3589", "url": "https://www.nelsonenvironmental.com", "pfas_panel": "EPA 537.1", "notes": "Provides sampling kits and instructions by mail."},
-    {"name": "Micro-Systems Inc (MSI)", "address": "7 Laser Ln, Wallingford, CT 06492", "county": "Regional", "phone": "(203) 265-0035", "url": "https://www.msicertified.com", "pfas_panel": "EPA 533 / 537.1 / DoD QSM", "notes": "Full 40-compound panel. Ships HDPE kit nationwide. Results in 10–14 days."},
+    {"name": "Long Island Analytical Laboratories, Inc.", "address": "110 Colin Dr, Holbrook, NY 11741", "county": "Suffolk", "phone": "(631) 472-3400", "url": "https://www.lialinc.com/what-we-do, "pfas_panel": "NYS ELAP-certified drinking water analysis", "notes": "Local Long Island lab. Ships HDPE bottles."},
+    {"name": "Suffolk County Water Authority", "address": "400 Oser Ave, Hauppauge, NY 11788", "county": "Suffolk", "phone": "(631) 563-0300", "url": "https://www.scwa.com/water-quality/pfas/", "pfas_panel": "Comprehensive inorganic and organic parameters including unregulated contaminants.", "notes": "Provides sampling kits and instructions by mail."},
+    {"name": "Eurofins Environment Testing New England / TestAmerica Network", "address": "Regional", "county": "Regional", "phone": "(800) 783-0120", "url": "https://www.eurofins.com/en-us/environment-testing/pfas-testing/services/drinking-water/", "pfas_panel": "EPA 533 / 537.1 / DoD QSM", "notes": "Full 40-compound panel. Ships HDPE kit nationwide. Results in 10–14 days."},
 ]
 
 # ─────────────────────────────────────────
@@ -649,7 +649,7 @@ elif page == "FAQs":
 # ═══════════════════════════════════════════
 elif page == "Testing Kits":
     st.markdown("## Testing Your Private Well")
-    st.markdown("If your home relies on a private well, county and state agencies do not test your water on your behalf. The steps below walk you through ordering a test, collecting a valid sample, and interpreting your results.")
+    st.markdown("If your home relies on a private well, county & state agencies do not test your water on your behalf. The steps below walk you through ordering a test, collecting a valid sample, and interpreting your results.")
     st.markdown('<hr style="border-color:#e2e8f0;margin-bottom:24px;">', unsafe_allow_html=True)
 
     kit_tab, checklist_tab, howto_tab = st.tabs(["Lab Directory", "Sampling Checklist", "Step-by-Step Guide"])
