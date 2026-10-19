@@ -326,7 +326,7 @@ elif page == "The Issue":
     st.markdown("### What are PFAS?")
     col_a, col_b = st.columns([1, 2])
     with col_a:
-        st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/PFOA_structure.svg/320px-PFOA_structure.svg.png", caption="PFOA molecular structure", use_container_width=True)
+        st.image("PFOA.html", caption="PFOA molecular structure", use_container_width=True)
     with col_b:
         st.markdown("""
         Per- and polyfluoroalkyl substances (PFAS) are a class of synthetic chemicals used since the 1950s in non-stick cookware, water-resistant fabrics, food packaging, and — the source of Long Island's problem — **military firefighting foam (AFFF)**.
@@ -364,7 +364,7 @@ elif page == "The Issue":
                 clr = "#dc2626" if mt>=10 else "#d97706"
                 st.markdown(f'<div class="stat-card" style="border-top-color:{clr};"><div style="font-size:0.7rem;color:#64748b;margin-bottom:4px;">{well["location"]}</div><div style="font-size:1.8rem;font-weight:800;color:{clr};line-height:1;">{lv}</div><div style="font-size:0.7rem;color:#64748b;">ng/L — {mc}</div><div style="font-size:0.75rem;font-weight:600;color:{clr};margin-top:4px;">{mt:.0f}x over limit</div></div>', unsafe_allow_html=True)
     with col_li2:
-        st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/CIM-10_Bomarc_at_March_AFB_Museum.jpg/320px-CIM-10_Bomarc_at_March_AFB_Museum.jpg", caption="CIM-10 BOMARC missile — the type deployed at Westhampton Beach", use_container_width=True)
+        st.image("AquiferSystem.jpg", caption="Long Island's 'lone aquier' system", use_container_width=True)
 
     st.markdown('<hr style="border-color:#e2e8f0;margin:20px 0;">', unsafe_allow_html=True)
     st.markdown("### Treatment options")
