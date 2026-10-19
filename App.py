@@ -326,7 +326,7 @@ elif page == "The Issue":
     st.markdown("### What are PFAS?")
     col_a, col_b = st.columns([1, 2])
     with col_a:
-        st.image("PFOA.html", caption="PFOA molecular structure", use_container_width=True)
+        st.image("newPFOA.png", caption="PFOA molecular structure", use_container_width=True)
     with col_b:
         st.markdown("""
         Per- and polyfluoroalkyl substances (PFAS) are a class of synthetic chemicals used since the 1950s in non-stick cookware, water-resistant fabrics, food packaging, and — the source of Long Island's problem — **military firefighting foam (AFFF)**.
