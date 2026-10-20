@@ -39,9 +39,9 @@ TOWN_OFFICIALS = {
 }
 
 ELAP_LABS = [
-    {"name": "Pace Analytical Services, LLC", "address": "575 Broad Hollow Rd, Melville, NY 11747", "county": "Nassau", "phone": "(516) 370-6000", "url": "https://www.pacelabs.com/analytical-environmental/pfas/", "pfas_panel": "EPA 533 / 537.1", "notes": "Can mail in water samples"},
+    {"name": "Pace Analytical Services, LLC", "address": "575 Broad Hollow Rd, Melville, NY 11747", "county": ["Nassau", "Suffolk"], "phone": "(516) 370-6000", "url": "https://www.pacelabs.com/analytical-environmental/pfas/", "pfas_panel": "EPA 533 / 537.1", "notes": "Can mail in water samples"},
     {"name": "Suffolk County Private Well Water Testing Program", "address": "360 Yaphank Avenue, Suite 1C, Yaphank, NY 11980", "county": "Suffolk", "phone": "(631) 852-5810.", "url": "https://suffolkcountyny.gov/Departments/Health-Services/Environmental-Quality/Water-Resources/Private-Well-Water-Testing-Program?", "pfas_panel": "EPA 537.1", "notes": "County residents may qualify for subsidized testing."},
-    {"name": "Long Island Analytical Laboratories, Inc.", "address": "110 Colin Dr, Holbrook, NY 11741", "county": "Suffolk", "phone": "(631) 472-3400", "url": "https://www.lialinc.com/what-we-do", "pfas_panel": "NYS ELAP-certified drinking water analysis", "notes": "Get shipped a kit or mail in a sample"},
+    {"name": "Long Island Analytical Laboratories, Inc.", "address": "110 Colin Dr, Holbrook, NY 11741", "county": ["Nassau", "Suffolk"], "phone": "(631) 472-3400", "url": "https://www.lialinc.com/what-we-do", "pfas_panel": "NYS ELAP-certified drinking water analysis", "notes": "Get shipped a kit or mail in a sample"},
     {"name": "Tap Score", "address": "1345 4th St. Berkeley, CA 94710", "county": "Regional", "phone": "(510)485-9396", "url": "https://mytapscore.com/products/pfas-water-test?country=US%C2%A4cy=USD&variant=29243769651297&utm_source=chatgpt.com", "pfas_panel": "EPA 537.1", "notes": "Full kit shipping option"},
 ]
 
