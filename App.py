@@ -370,10 +370,30 @@ elif page == "The Issue":
     st.markdown("### Treatment options")
     t1, t2 = st.columns(2)
     with t1:
-        st.markdown('<div class="data-card warning"><div style="font-weight:600;margin-bottom:6px;">Granular Activated Carbon: current standard</div><div style="font-size:0.85rem;color:#475569;line-height:1.65;">PFAS molecules adsorb onto the carbon surface and are removed from the water, but not destroyed. Spent carbon must be disposed of as hazardous waste. Short-chain PFAS compounds such as PFBA adsorb poorly, achieving low removal.</div></div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="data-card warning">'
+            '<div style="font-weight:600;margin-bottom:6px;">Granular Activated Carbon: current standard</div>'
+            '<div style="font-size:0.85rem;color:#475569;line-height:1.65;">'
+            '<ul style="margin:0;padding-left:18px;">'
+            "<li><strong>PFAS</strong> molecules adsorb onto the carbon surface and are removed from the water, but not destroyed.</li>"
+            "<li><strong>Spent</strong> carbon must be disposed of as hazardous waste.</li>"
+            "<li><strong>Short</strong>-chain PFAS compounds such as PFBA adsorb poorly, achieving low removal.</li>"
+            "</ul>"
+            "</div></div>",
+            unsafe_allow_html=True,
+        )
     with t2:
-        st.markdown('<div class="data-card success"><div style="font-weight:600;margin-bottom:6px;">Advanced Oxidation: emerging alternative</div><div style="font-size:0.85rem;color:#475569;line-height:1.65;">Generate hydroxyl radicals that break C-F bonds directly, mineralizing PFAS into non-toxic products. Near-equal across all chain lengths. </div></div>', unsafe_allow_html=True)
-
+        st.markdown(
+            '<div class="data-card success">'
+            '<div style="font-weight:600;margin-bottom:6px;">Advanced Oxidation: emerging alternative</div>'
+            '<div style="font-size:0.85rem;color:#475569;line-height:1.65;">'
+            '<ul style="margin:0;padding-left:18px;">'
+            "<li><strong>Generate</strong> hydroxyl radicals that break C-F bonds directly, mineralizing PFAS into non-toxic products.</li>"
+            "<li><strong>Near</strong>-equal effectiveness across all chain lengths.</li>"
+            "</ul>"
+            "</div></div>",
+            unsafe_allow_html=True,
+        )
     st.markdown('<hr style="border-color:#e2e8f0;margin:20px 0;">', unsafe_allow_html=True)
     st.markdown("### Recent coverage")
     n1, n2, n3 = st.columns(3)
