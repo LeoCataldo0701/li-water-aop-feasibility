@@ -329,9 +329,9 @@ elif page == "The Issue":
         st.image("newPFOA.png", caption="PFOA molecular structure", use_container_width=True)
     with col_b:
         st.markdown("""
-        Per- and polyfluoroalkyl substances (PFAS) are a class of synthetic chemicals used since the 1950s in non-stick cookware, water-resistant fabrics, food packaging, and — the source of Long Island's problem — **military firefighting foam (AFFF)**.
+        Per- and polyfluoroalkyl substances (PFAS): a class of synthetic chemicals used since the 1950s in cookware, fabrics, food packaging, and military firefighting foam (AFFF), causing the contamination at BOMARC.
 
-        The carbon-fluorine bond is one of the strongest in chemistry. PFAS do not break down in soil, water, or the human body. Concentrations accumulate over decades of exposure. There is no safe threshold at which the body eliminates them faster than they build up.
+        The C-F bond is one of the strongest in chemistry. PFAS do not break down in soil, water, or the human body. Concentrations accumulate over decades of exposure. The body CANNOT breakdown PFAS faster than it accumulates. **Prevention is the best option**
         """)
 
     st.markdown('<hr style="border-color:#e2e8f0;margin:20px 0;">', unsafe_allow_html=True)
@@ -339,9 +339,9 @@ elif page == "The Issue":
 
     h1, h2, h3 = st.columns(3)
     for col, title, text in [
-        (h1, "Cancer",            "Epidemiological studies link chronic PFAS exposure to elevated rates of kidney, testicular, and thyroid cancers. The EPA classified PFOA as a likely human carcinogen in 2016."),
-        (h2, "Developmental harm","PFAS cross the placental barrier and are present in breast milk. Exposure during early development is associated with immune suppression and hormone disruption in children."),
-        (h3, "Cardiovascular",    "Chronic exposure correlates with elevated LDL cholesterol and liver enzyme abnormalities, both risk factors for long-term cardiovascular disease."),
+        (h1, "Cancer",            "Studies link chronic PFAS exposure to elevated of kidney, testicular, and thyroid cancer rates. PFOA: classified as a likely carcinogen"),
+        (h2, "Development","PFAS cross the placental barrier and are present in breast milk. Exposure as a baby causes immune suppression and hormone disruption in children."),
+        (h3, "Cardiovascular",    "Chronic exposure correlates with elevated LDL cholesterol and liver enzyme abnormalities, risk factors for cardiovascular disease."),
     ]:
         with col:
             st.markdown(f'<div class="data-card alert"><div style="font-weight:600;font-size:0.9rem;margin-bottom:6px;color:#0f172a;">{title}</div><div style="font-size:0.82rem;color:#475569;line-height:1.6;">{text}</div></div>', unsafe_allow_html=True)
@@ -352,9 +352,9 @@ elif page == "The Issue":
     col_li1, col_li2 = st.columns([3, 2])
     with col_li1:
         st.markdown("""
-        Long Island sits entirely over a sole-source aquifer — the only drinking water source for 3 million residents, with no alternative supply. The island's sandy glacial soil is highly permeable: contaminants introduced at the surface can reach groundwater within years.
+        Long Island uses a sole-source aquifer system: 1 aquifer is the only drinking water source for 3 million residents...no alternative supply. LI's sandy glacial soil is highly permeable: contaminants introduced at the surface can reach groundwater quickly
 
-        The BOMARC missile site in Westhampton Beach operated as a Cold War-era Air National Guard installation from the 1950s through the 1970s. Firefighting foam containing PFAS was used routinely during that period and seeped into the surrounding soil. Suffolk County Department of Health Services investigations in 2020 and 2024 confirmed contamination at nearby groundwater monitoring wells.
+        The BOMARC site in Westhampton Beach was a Cold War-era Air National Guard installation from the 50s-70s. Firefighting foam containing PFAS was used routinely during that period and seeped into the surrounding soil. 
         """)
         w1, w2, w3 = st.columns(3)
         for col, well in zip([w1,w2,w3], list(BOMARC_WELLS.values())):
