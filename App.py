@@ -370,9 +370,9 @@ elif page == "The Issue":
     st.markdown("### Treatment options")
     t1, t2 = st.columns(2)
     with t1:
-        st.markdown('<div class="data-card warning"><div style="font-weight:600;margin-bottom:6px;">Granular Activated Carbon — current standard</div><div style="font-size:0.85rem;color:#475569;line-height:1.65;">PFAS molecules adsorb onto the carbon surface and are removed from the water stream, but not destroyed. Spent carbon must be disposed of as hazardous waste, typically every 6–8 months. Short-chain PFAS compounds such as PFBA adsorb poorly, achieving removal rates as low as 22%.</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="data-card warning"><div style="font-weight:600;margin-bottom:6px;">Granular Activated Carbon: current standard</div><div style="font-size:0.85rem;color:#475569;line-height:1.65;">PFAS molecules adsorb onto the carbon surface and are removed from the water, but not destroyed. Spent carbon must be disposed of as hazardous waste. Short-chain PFAS compounds such as PFBA adsorb poorly, achieving low removal.</div></div>', unsafe_allow_html=True)
     with t2:
-        st.markdown('<div class="data-card success"><div style="font-weight:600;margin-bottom:6px;">Photo-Fenton Advanced Oxidation — emerging alternative</div><div style="font-size:0.85rem;color:#475569;line-height:1.65;">Iron, hydrogen peroxide, and UV radiation generate hydroxyl radicals that break carbon-fluorine bonds directly, mineralizing PFAS into carbon dioxide, hydrogen fluoride, and water. Effective across all chain lengths. No hazardous waste stream. Developed in part through research at the CUNY Vittadello Lab.</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="data-card success"><div style="font-weight:600;margin-bottom:6px;">Advanced Oxidation: emerging alternative</div><div style="font-size:0.85rem;color:#475569;line-height:1.65;">Generate hydroxyl radicals that break C-F bonds directly, mineralizing PFAS into non-toxic products. Near-equal across all chain lengths. </div></div>', unsafe_allow_html=True)
 
     st.markdown('<hr style="border-color:#e2e8f0;margin:20px 0;">', unsafe_allow_html=True)
     st.markdown("### Recent coverage")
