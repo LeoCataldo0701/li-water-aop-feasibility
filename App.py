@@ -227,7 +227,7 @@ PARAMS = {
     "k_I":       {"value": 3e8,    "units": "L/(mol·s)", "status": "lumped estimate"},
     "k_s":       {"value": 2e4,    "units": "1/s",       "status": "background scavenging; field-dependent"},
     "k_scav":    {"value": 2.7e7,  "units": "L/(mol·s)", "status": "OH + H2O2 (Buxton et al. 1988)"},
-    "k_Fe":      {"value": 3.0e8,  "units": "L/(mol·s)", "status": "Fe2+ + OH (Walling 1975)"},
+    "k_Fe":      {"value": 3.0e6,  "units": "L/(mol·s)", "status": "Fe2+ + OH (Walling 1975)"},
     "k_f_ref":   {"value": 63.0,   "units": "L/(mol·s)", "status": "Fe2+ + H2O2 at 25C, pH~3 (Walling 1975)"},
     "k_r_ref":   {"value": 8.4e-6, "units": "L/(mol·s)", "status": "Fe3+ + H2O2, slow back reaction"},
     "k_hv_h2o2": {"value": 5e-5,   "units": "1/s",       "status": "UNCALIBRATED: needs lamp photon flux"},
