@@ -224,14 +224,12 @@ k_Fe=2.3e8; k_hv_Fe=3.5e-4; k_hv_h2o2=5e-4
 def build_rate_constants(pH, temp_C):
     temp_K = temp_C + 273.15
     arr = np.exp(-Ea_J / R_gas * (1/temp_K - 1/T_REF))
-    
-    # Severe drop-off if pH exceeds optimal Fenton range due to iron precipitation
-    if pH > 4.5:
-        activity_factor = 0.01
-    else:
-        activity_factor = 10**(-(pH-3.0)*0.5)
-        
-    return 63.0 * arr * activity_factor, 8.4e-6 * arr
+    # Smooth Gaussian-shaped pH dependence peaking near pH 2.8 (Pignatello 1992 trend).
+    # Fenton activity falls off on both sides; replaces the hard cutoff.
+    pH_factor = np.exp(-((pH - 2.8) ** 2) / (2 * 0.9 ** 2))
+    k_f = 63.0 * arr * pH_factor
+    k_r = 8.4e-6 * arr
+    return k_f, k_r
 
 def photo_fenton_odes(t, y, Fe_total, k_f, k_r):
     H2O2, OH, PFOA, I, Fe2, Fe3 = [max(v, 0) for v in y]
