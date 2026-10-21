@@ -230,7 +230,7 @@ PARAMS = {
     "k_Fe":      {"value": 3.0e8,  "units": "L/(mol·s)", "status": "Fe2+ + OH (Walling 1975)"},
     "k_f_ref":   {"value": 63.0,   "units": "L/(mol·s)", "status": "Fe2+ + H2O2 at 25C, pH~3 (Walling 1975)"},
     "k_r_ref":   {"value": 8.4e-6, "units": "L/(mol·s)", "status": "Fe3+ + H2O2, slow back reaction"},
-    "k_hv_h2o2": {"value": 5e-4,   "units": "1/s",       "status": "UNCALIBRATED: needs lamp photon flux"},
+    "k_hv_h2o2": {"value": 5e-5,   "units": "1/s",       "status": "UNCALIBRATED: needs lamp photon flux"},
     "k_hv_Fe":   {"value": 1e-2,   "units": "1/s",       "status": "UNCALIBRATED: Fe3+ photoreduction, needs lamp data"},
 }
 
