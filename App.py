@@ -218,13 +218,20 @@ page = st.session_state.page
 # KINETICS
 # ─────────────────────────────────────────
 MW_PFOA=414.07; T_REF=298.15; Ea_J=50_000; R_gas=8.314
-k_PFOA=1e7; k_I=3e8; k_s=2e4; k_H2O2_scav=2.7e7
+k_PFOA=4e6; k_I=3e8; k_s=2e4; k_H2O2_scav=2.7e7
 k_Fe=2.3e8; k_hv_Fe=3.5e-4; k_hv_h2o2=5e-4
 
 def build_rate_constants(pH, temp_C):
     temp_K = temp_C + 273.15
-    arr    = np.exp(-Ea_J / R_gas * (1/temp_K - 1/T_REF))
-    return 63.0 * arr * 10**(-(pH-3.0)*0.5), 8.4e-6 * arr
+    arr = np.exp(-Ea_J / R_gas * (1/temp_K - 1/T_REF))
+    
+    # Severe drop-off if pH exceeds optimal Fenton range due to iron precipitation
+    if pH > 4.5:
+        activity_factor = 0.01
+    else:
+        activity_factor = 10**(-(pH-3.0)*0.5)
+        
+    return 63.0 * arr * activity_factor, 8.4e-6 * arr
 
 def photo_fenton_odes(t, y, Fe_total, k_f, k_r):
     H2O2, OH, PFOA, I, Fe2, Fe3 = [max(v, 0) for v in y]
