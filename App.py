@@ -214,62 +214,118 @@ with st.sidebar:
 
 page = st.session_state.page
 
-# ─────────────────────────────────────────
-# KINETICS
-# ─────────────────────────────────────────
-MW_PFOA=414.07; T_REF=298.15; Ea_J=50_000; R_gas=8.314
-k_PFOA=4e6; k_I=3e8; k_s=2e4; k_H2O2_scav=2.7e7
-k_Fe=2.3e8; k_hv_Fe=3.5e-4; k_hv_h2o2=5e-4
+# ── KINETICS ──────────────────────────────────────────────
+# Parameters are placeholders pending calibration. Each is labeled
+# with its status so the About the Math page can be honest about it.
+MW_PFOA = 414.07
+T_REF   = 298.15
+Ea_J    = 50_000
+R_gas   = 8.314
+
+PARAMS = {
+    "k_PFOA":    {"value": 4e6,    "units": "L/(mol·s)", "status": "literature order-of-magnitude; verify"},
+    "k_I":       {"value": 3e8,    "units": "L/(mol·s)", "status": "lumped estimate"},
+    "k_s":       {"value": 2e4,    "units": "1/s",       "status": "background scavenging; field-dependent"},
+    "k_scav":    {"value": 2.7e7,  "units": "L/(mol·s)", "status": "OH + H2O2 (Buxton et al. 1988)"},
+    "k_Fe":      {"value": 3.0e8,  "units": "L/(mol·s)", "status": "Fe2+ + OH (Walling 1975)"},
+    "k_f_ref":   {"value": 63.0,   "units": "L/(mol·s)", "status": "Fe2+ + H2O2 at 25C, pH~3 (Walling 1975)"},
+    "k_r_ref":   {"value": 8.4e-6, "units": "L/(mol·s)", "status": "Fe3+ + H2O2, slow back reaction"},
+    "k_hv_h2o2": {"value": 5e-4,   "units": "1/s",       "status": "UNCALIBRATED: needs lamp photon flux"},
+    "k_hv_Fe":   {"value": 1e-2,   "units": "1/s",       "status": "UNCALIBRATED: Fe3+ photoreduction, needs lamp data"},
+}
+
+k_PFOA   = PARAMS["k_PFOA"]["value"]
+k_I      = PARAMS["k_I"]["value"]
+k_s      = PARAMS["k_s"]["value"]
+k_scav   = PARAMS["k_scav"]["value"]
+k_Fe     = PARAMS["k_Fe"]["value"]
+k_hv_h2o2 = PARAMS["k_hv_h2o2"]["value"]
+k_hv_Fe   = PARAMS["k_hv_Fe"]["value"]
 
 def build_rate_constants(pH, temp_C):
+    """Arrhenius temperature correction and a continuous pH factor.
+    The pH factor is a Gaussian peaked at pH 2.8, a simplifying
+    assumption that reproduces the known Fenton optimum region."""
     temp_K = temp_C + 273.15
     arr = np.exp(-Ea_J / R_gas * (1/temp_K - 1/T_REF))
-    # Smooth Gaussian-shaped pH dependence peaking near pH 2.8 (Pignatello 1992 trend).
-    # Fenton activity falls off on both sides; replaces the hard cutoff.
     pH_factor = np.exp(-((pH - 2.8) ** 2) / (2 * 0.9 ** 2))
-    k_f = 63.0 * arr * pH_factor
-    k_r = 8.4e-6 * arr
+    k_f = PARAMS["k_f_ref"]["value"] * arr * pH_factor
+    k_r = PARAMS["k_r_ref"]["value"] * arr
     return k_f, k_r
 
-def photo_fenton_odes(t, y, Fe_total, k_f, k_r):
+def photo_fenton_odes(t, y, k_f, k_r):
     H2O2, OH, PFOA, I, Fe2, Fe3 = [max(v, 0) for v in y]
-    dH2O2 = (-k_hv_h2o2*H2O2 - k_H2O2_scav*OH*H2O2 - k_f*Fe2*H2O2 - k_r*Fe3*H2O2)
-    dOH   = (2*k_hv_h2o2*H2O2 + k_f*Fe2*H2O2 - k_PFOA*OH*PFOA - k_I*OH*I - k_s*OH - k_H2O2_scav*OH*H2O2 - k_Fe*Fe2*OH)
+    # Fenton: Fe2+ + H2O2 -> Fe3+ + OH + OH-
+    r_fenton  = k_f * Fe2 * H2O2
+    # Photoreduction: Fe3+ + hv -> Fe2+ + OH   (regenerates catalyst)
+    r_photo_fe = k_hv_Fe * Fe3
+    # Photolysis: H2O2 + hv -> 2 OH
+    r_photo_h2o2 = k_hv_h2o2 * H2O2
+
+    dH2O2 = -r_fenton - r_photo_h2o2 - k_scav*OH*H2O2 - k_r*Fe3*H2O2
+    dOH   =  r_fenton + 2*r_photo_h2o2 + r_photo_fe \
+             - k_PFOA*OH*PFOA - k_I*OH*I - k_s*OH \
+             - k_scav*OH*H2O2 - k_Fe*Fe2*OH
     dPFOA = -k_PFOA*OH*PFOA
     dI    =  k_PFOA*OH*PFOA - k_I*OH*I
-    dFe2  = (-k_f*Fe2*H2O2 + k_r*Fe3*H2O2 - k_Fe*Fe2*OH + k_hv_Fe*Fe3)
-    return [dH2O2, dOH, dPFOA, dI, dFe2, -dFe2]
+    dFe2  = -r_fenton + k_r*Fe3*H2O2 + r_photo_fe - k_Fe*Fe2*OH
+    dFe3  = -dFe2   # total iron conserved
+    return [dH2O2, dOH, dPFOA, dI, dFe2, dFe3]
 
-def simulate_all_contaminants(well_info, pH, temp, H2O2, Fe, costs):
+def simulate_all_contaminants(well_info, pH, temp, H2O2_mM, Fe_uM, costs):
     results = {}
+    k_f, k_r = build_rate_constants(pH, temp)
+    H2O2_0 = H2O2_mM * 1e-3
+    Fe_0   = Fe_uM * 1e-6
+    t_end  = 7200.0
+    t_eval = np.linspace(0, t_end, 3600)
+
     for contaminant, data in well_info["compounds"].items():
-        level_ng_l = data["level_ng_l"]
-        gac_pct    = data["gac_removal"] * 100
-        PFOA_0     = level_ng_l * 1e-9 / MW_PFOA
-        H2O2_mol   = H2O2 * 1e-3; Fe_mol = Fe * 1e-6
-        k_f, k_r   = build_rate_constants(pH, temp)
+        PFOA_0 = data["level_ng_l"] * 1e-9 / MW_PFOA
+        gac_pct = data["gac_removal"] * 100
+
         sol = solve_ivp(
-            fun=lambda t, y: photo_fenton_odes(t, y, Fe_mol, k_f, k_r),
-            t_span=(0,7200), y0=[H2O2_mol,0.0,PFOA_0,0.0,Fe_mol,0.0],
-            method='BDF', t_eval=np.linspace(0,7200,3600), rtol=1e-8, atol=1e-12
+            fun=lambda t, y: photo_fenton_odes(t, y, k_f, k_r),
+            t_span=(0, t_end),
+            y0=[H2O2_0, 0.0, PFOA_0, 0.0, Fe_0, 0.0],
+            method="BDF", t_eval=t_eval, rtol=1e-8, atol=1e-14,
         )
-        t_min = sol.t/60
-        f_rem = (1 - np.maximum(sol.y[2],0)/PFOA_0)*100
-        idx_90 = np.where(f_rem>=90)[0]
-        t90 = t_min[idx_90[0]] if len(idx_90)>0 else None
-        fc = H2O2_mol*1000*costs["H2O2"] + Fe_mol*1000*costs["Fe"] + (t90 or 120.0)*costs["UV"]
-        gc = (costs["gac_lb"]+costs["gac_disposal"])*0.025
-        pr = (PFOA_0*f_rem[-1]/100)*MW_PFOA*1e6
-        gr = (PFOA_0*gac_pct/100)*MW_PFOA*1e6
+        t_min  = sol.t / 60
+        pfoa_t = np.maximum(sol.y[2], 0)
+        f_rem  = (1 - pfoa_t / PFOA_0) * 100
+        idx_90 = np.where(f_rem >= 90)[0]
+        t90    = t_min[idx_90[0]] if len(idx_90) > 0 else None
+
+        # Diagnostics
+        oh      = np.maximum(sol.y[1], 0)
+        oh_peak = oh.max()
+        oh_ss   = np.median(oh[-300:])
+        pfoa_pseudo_rate = k_PFOA * oh_ss   # s^-1
+
+        # Costs (per liter)
+        fc = H2O2_0*1000*costs["H2O2"] + Fe_0*1000*costs["Fe"] + (t90 or 120.0)*costs["UV"]
+        gc = (costs["gac_lb"] + costs["gac_disposal"]) * 0.025
+        pr = (PFOA_0 * f_rem[-1]/100) * MW_PFOA * 1e6
+        gr = (PFOA_0 * gac_pct/100)   * MW_PFOA * 1e6
+
         results[contaminant] = {
-            "level_ng_l": level_ng_l, "fenton_removal": f_rem[-1], "fenton_t90": t90,
-            "fenton_cost": fc, "fenton_cost_per_ug": fc/pr if pr>0 else 9999,
-            "gac_removal": gac_pct, "gac_cost": gc,
-            "gac_cost_per_ug": gc/gr if gr>0 else 9999,
-            "gac_fails": gac_pct<50,
-            "fenton_wins_removal": f_rem[-1]>gac_pct,
-            "fenton_wins_cost": fc<gc,
-            "t_min": t_min, "fenton_removal_curve": f_rem,
+            "level_ng_l": data["level_ng_l"],
+            "fenton_removal": f_rem[-1],
+            "fenton_t90": t90,
+            "fenton_cost": fc,
+            "fenton_cost_per_ug": fc/pr if pr > 0 else 9999,
+            "gac_removal": gac_pct,
+            "gac_cost": gc,
+            "gac_cost_per_ug": gc/gr if gr > 0 else 9999,
+            "gac_fails": gac_pct < 50,
+            "fenton_wins_removal": f_rem[-1] > gac_pct,
+            "fenton_wins_cost": fc < gc,
+            "oh_peak": oh_peak,
+            "oh_steady": oh_ss,
+            "pfoa_pseudo_rate": pfoa_pseudo_rate,
+            "fe2_final": sol.y[4][-1],
+            "t_min": t_min,
+            "fenton_removal_curve": f_rem,
         }
     return results
 
@@ -569,7 +625,9 @@ elif page == "Compare Treatments":
 
         if st.button("Run comparison", type="primary", use_container_width=True):
             costs = {"H2O2": cost_H2O2_per_mmol, "Fe": cost_Fe_per_mmol, "UV": cost_UV_per_min, "gac_lb": gac_cost_lb, "gac_disposal": gac_disposal_cost}
-            results = simulate_all_contaminants(well_info, user_pH, user_temp, user_H2O2, user_Fe, costs)
+            results = simulate_all_contaminants(
+                well_info, user_pH, user_temp, user_H2O2, user_Fe, costs
+            )
 
             st.markdown(f"### {selected_well_name}")
             cols = st.columns(len(results))
