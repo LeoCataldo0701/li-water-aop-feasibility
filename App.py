@@ -223,7 +223,7 @@ Ea_J    = 50_000
 R_gas   = 8.314
 
 PARAMS = {
-    "k_PFOA":    {"value": 4e6,    "units": "L/(mol·s)", "status": "literature order-of-magnitude; verify"},
+    "k_PFOA":    {"value": 1e6,    "units": "L/(mol·s)", "status": "literature order-of-magnitude; verify"},
     "k_I":       {"value": 3e8,    "units": "L/(mol·s)", "status": "lumped estimate"},
     "k_s":       {"value": 2e4,    "units": "1/s",       "status": "background scavenging; field-dependent"},
     "k_scav":    {"value": 2.7e7,  "units": "L/(mol·s)", "status": "OH + H2O2 (Buxton et al. 1988)"},
