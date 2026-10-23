@@ -368,7 +368,7 @@ if page == "Home":
     <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:14px 20px;display:flex;align-items:center;gap:12px;">
         <div style="width:8px;height:8px;border-radius:50%;background:#ea580c;flex-shrink:0;"></div>
         <div style="font-size:0.875rem;color:#9a3412;">
-            <strong>Active contamination:</strong> PFOA and PFOS detected at the BOMARC site (Westhampton) at levels up to 12x above New York's 10 ng/L safe limit as of the 2024 Suffolk County investigation.
+            <strong>Active contamination:</strong> PFOA, PFOS, and PFBA detected at the BOMARC site (Westhampton) at levels up to 15x above New York's 10 ng/L safe limit as of the 2024 Suffolk County investigation.
         </div>
     </div>
     """, unsafe_allow_html=True)
