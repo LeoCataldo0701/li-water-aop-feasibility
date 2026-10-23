@@ -594,7 +594,7 @@ elif page == "Compare Treatments":
         st.markdown("#### Rate constants")
         st.dataframe([
             {"Symbol": "k_PFOA", "Value": "3 × 10^5 L/(mol·s)", "Reaction": "OH + PFOA", "Source": "Qian et al. 2016"},
-            {"Symbol": "k_PFOS", "Value": "1 × 10^5 L/(mol·s)", "Reaction": "OH + PFOA", "Source": " Veecitis et al. 2009"},
+            {"Symbol": "k_PFOS", "Value": "1 × 10^5 L/(mol·s)", "Reaction": "OH + PFOA", "Source": "Vecitis et al. 2009"},
             {"Symbol": "k_PFBA", "Value": "9.3 × 10⁷ L/(mol·s)", "Reaction": "OH + PFOA", "Source": "Qian et al. 2016"},
             {"Symbol": "k_I",    "Value": "3.0 × 10⁸ L/(mol·s)", "Reaction": "OH + intermediates (lumped)", "Source": "estimated"},
             {"Symbol": "k_s",    "Value": "2.0 × 10⁴ s⁻¹", "Reaction": "background OH scavenging", "Source": "field estimate"},
