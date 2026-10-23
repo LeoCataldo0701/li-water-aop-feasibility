@@ -222,8 +222,15 @@ T_REF   = 298.15
 Ea_J    = 50_000
 R_gas   = 8.314
 
+# Per-compound OH-radical rate constants, L/(mol·s)
+K_OH_PFAS = {
+    "PFOA": 3e5,    # [YOUR SOURCE]
+    "PFOS": 1e3,    # [YOUR SOURCE]
+    "PFBA": 9.31e7, # [YOUR SOURCE]
+}
+K_OH_DEFAULT = 3e5  # fallback for any unlisted compound
+
 PARAMS = {
-    "k_PFOA":    {"value": 3e6,    "units": "L/(mol·s)", "status": "literature order-of-magnitude; verify"},
     "k_I":       {"value": 3e8,    "units": "L/(mol·s)", "status": "lumped estimate"},
     "k_s":       {"value": 2e4,    "units": "1/s",       "status": "background scavenging; field-dependent"},
     "k_scav":    {"value": 2.7e7,  "units": "L/(mol·s)", "status": "OH + H2O2 (Buxton et al. 1988)"},
@@ -234,11 +241,10 @@ PARAMS = {
     "k_hv_Fe":   {"value": 1e-2,   "units": "1/s",       "status": "UNCALIBRATED: Fe3+ photoreduction, needs lamp data"},
 }
 
-k_PFOA   = PARAMS["k_PFOA"]["value"]
-k_I      = PARAMS["k_I"]["value"]
-k_s      = PARAMS["k_s"]["value"]
-k_scav   = PARAMS["k_scav"]["value"]
-k_Fe     = PARAMS["k_Fe"]["value"]
+k_I       = PARAMS["k_I"]["value"]
+k_s       = PARAMS["k_s"]["value"]
+k_scav    = PARAMS["k_scav"]["value"]
+k_Fe      = PARAMS["k_Fe"]["value"]
 k_hv_h2o2 = PARAMS["k_hv_h2o2"]["value"]
 k_hv_Fe   = PARAMS["k_hv_Fe"]["value"]
 
@@ -253,24 +259,21 @@ def build_rate_constants(pH, temp_C):
     k_r = PARAMS["k_r_ref"]["value"] * arr
     return k_f, k_r
 
-def photo_fenton_odes(t, y, k_f, k_r):
-    H2O2, OH, PFOA, I, Fe2, Fe3 = [max(v, 0) for v in y]
-    # Fenton: Fe2+ + H2O2 -> Fe3+ + OH + OH-
-    r_fenton  = k_f * Fe2 * H2O2
-    # Photoreduction: Fe3+ + hv -> Fe2+ + OH   (regenerates catalyst)
-    r_photo_fe = k_hv_Fe * Fe3
-    # Photolysis: H2O2 + hv -> 2 OH
+def photo_fenton_odes(t, y, k_f, k_r, k_pfas):
+    H2O2, OH, PFAS, I, Fe2, Fe3 = [max(v, 0) for v in y]
+    r_fenton     = k_f * Fe2 * H2O2
+    r_photo_fe   = k_hv_Fe * Fe3
     r_photo_h2o2 = k_hv_h2o2 * H2O2
 
     dH2O2 = -r_fenton - r_photo_h2o2 - k_scav*OH*H2O2 - k_r*Fe3*H2O2
-    dOH   =  r_fenton + 2*r_photo_h2o2 + r_photo_fe \
-             - k_PFOA*OH*PFOA - k_I*OH*I - k_s*OH \
-             - k_scav*OH*H2O2 - k_Fe*Fe2*OH
-    dPFOA = -k_PFOA*OH*PFOA
-    dI    =  k_PFOA*OH*PFOA - k_I*OH*I
+    dOH   = (r_fenton + 2*r_photo_h2o2 + r_photo_fe
+             - k_pfas*OH*PFAS - k_I*OH*I - k_s*OH
+             - k_scav*OH*H2O2 - k_Fe*Fe2*OH)
+    dPFAS = -k_pfas*OH*PFAS
+    dI    =  k_pfas*OH*PFAS - k_I*OH*I
     dFe2  = -r_fenton + k_r*Fe3*H2O2 + r_photo_fe - k_Fe*Fe2*OH
-    dFe3  = -dFe2   # total iron conserved
-    return [dH2O2, dOH, dPFOA, dI, dFe2, dFe3]
+    dFe3  = -dFe2
+    return [dH2O2, dOH, dPFAS, dI, dFe2, dFe3]
 
 def simulate_all_contaminants(well_info, pH, temp, H2O2_mM, Fe_uM, costs):
     results = {}
@@ -281,50 +284,50 @@ def simulate_all_contaminants(well_info, pH, temp, H2O2_mM, Fe_uM, costs):
     t_eval = np.linspace(0, t_end, 3600)
 
     for contaminant, data in well_info["compounds"].items():
-        PFOA_0 = data["level_ng_l"] * 1e-9 / MW_PFOA
+        k_pfas = K_OH_PFAS.get(contaminant, K_OH_DEFAULT)  # compound-specific rate constant
+        PFAS_0 = data["level_ng_l"] * 1e-9 / MW_PFOA       # MW_PFOA used as proxy; update if you add per-compound MW
         gac_pct = data["gac_removal"] * 100
 
         sol = solve_ivp(
-            fun=lambda t, y: photo_fenton_odes(t, y, k_f, k_r),
+            fun=lambda t, y, k_f=k_f, k_r=k_r, k_pfas=k_pfas: photo_fenton_odes(t, y, k_f, k_r, k_pfas),
             t_span=(0, t_end),
-            y0=[H2O2_0, 0.0, PFOA_0, 0.0, Fe_0, 0.0],
+            y0=[H2O2_0, 0.0, PFAS_0, 0.0, Fe_0, 0.0],
             method="BDF", t_eval=t_eval, rtol=1e-8, atol=1e-14,
         )
         t_min  = sol.t / 60
-        pfoa_t = np.maximum(sol.y[2], 0)
-        f_rem  = (1 - pfoa_t / PFOA_0) * 100
+        pfas_t = np.maximum(sol.y[2], 0)
+        f_rem  = (1 - pfas_t / PFAS_0) * 100
         idx_90 = np.where(f_rem >= 90)[0]
         t90    = t_min[idx_90[0]] if len(idx_90) > 0 else None
 
-        # Diagnostics
-        oh      = np.maximum(sol.y[1], 0)
+        oh     = np.maximum(sol.y[1], 0)
         oh_peak = oh.max()
         oh_ss   = np.median(oh[-300:])
-        pfoa_pseudo_rate = k_PFOA * oh_ss   # s^-1
+        pfas_pseudo_rate = k_pfas * oh_ss  # s^-1
 
-        # Costs (per liter)
         fc = H2O2_0*1000*costs["H2O2"] + Fe_0*1000*costs["Fe"] + (t90 or 120.0)*costs["UV"]
         gc = (costs["gac_lb"] + costs["gac_disposal"]) * 0.025
-        pr = (PFOA_0 * f_rem[-1]/100) * MW_PFOA * 1e6
-        gr = (PFOA_0 * gac_pct/100)   * MW_PFOA * 1e6
+        pr = (PFAS_0 * f_rem[-1]/100) * MW_PFOA * 1e6
+        gr = (PFAS_0 * gac_pct/100)   * MW_PFOA * 1e6
 
         results[contaminant] = {
-            "level_ng_l": data["level_ng_l"],
-            "fenton_removal": f_rem[-1],
-            "fenton_t90": t90,
-            "fenton_cost": fc,
+            "level_ng_l":         data["level_ng_l"],
+            "k_oh":               k_pfas,
+            "fenton_removal":     f_rem[-1],
+            "fenton_t90":         t90,
+            "fenton_cost":        fc,
             "fenton_cost_per_ug": fc/pr if pr > 0 else 9999,
-            "gac_removal": gac_pct,
-            "gac_cost": gc,
-            "gac_cost_per_ug": gc/gr if gr > 0 else 9999,
-            "gac_fails": gac_pct < 50,
-            "fenton_wins_removal": f_rem[-1] > gac_pct,
-            "fenton_wins_cost": fc < gc,
-            "oh_peak": oh_peak,
-            "oh_steady": oh_ss,
-            "pfoa_pseudo_rate": pfoa_pseudo_rate,
-            "fe2_final": sol.y[4][-1],
-            "t_min": t_min,
+            "gac_removal":        gac_pct,
+            "gac_cost":           gc,
+            "gac_cost_per_ug":    gc/gr if gr > 0 else 9999,
+            "gac_fails":          gac_pct < 50,
+            "fenton_wins_removal":f_rem[-1] > gac_pct,
+            "fenton_wins_cost":   fc < gc,
+            "oh_peak":            oh_peak,
+            "oh_steady":          oh_ss,
+            "pfas_pseudo_rate":   pfas_pseudo_rate,
+            "fe2_final":          sol.y[4][-1],
+            "t_min":              t_min,
             "fenton_removal_curve": f_rem,
         }
     return results
@@ -689,7 +692,8 @@ elif page == "Compare Treatments":
             st.dataframe([{"Compound": c, "Level (ng/L)": f"{d['level_ng_l']:.1f}", "Fenton removal": f"{d['fenton_removal']:.0f}%", "GAC removal": f"{d['gac_removal']:.0f}%", "Fenton $/L": f"${d['fenton_cost']:.4f}", "GAC $/L": f"${d['gac_cost']:.4f}", "Fenton $/µg": f"${d['fenton_cost_per_ug']:.4f}", "GAC $/µg": f"${d['gac_cost_per_ug']:.4f}", "Removal winner": "Photo-Fenton" if d["fenton_wins_removal"] else "GAC", "Cost winner": "Photo-Fenton" if d["fenton_wins_cost"] else "GAC"} for c, d in results.items()], use_container_width=True)
             with st.expander("Conditions used in this run"):
                 arr = np.exp(-Ea_J/R_gas*(1/(user_temp+273.15)-1/T_REF))
-                st.markdown(f"pH {user_pH} · {user_temp}°C · Arrhenius factor {arr:.3f} · k_PFOA 1×10⁷ (Hori 2004) · GAC: PFOA 75%, PFOS 70%, PFBA 22% (EPA 2020 / Long 2023)")
+                k_table = " · ".join([f"k_OH({c}) = {v:.2e}" for c, v in K_OH_PFAS.items()])
+                st.markdown(f"pH {user_pH} · {user_temp}°C · Arrhenius factor {arr:.3f} · {k_table} · GAC: PFOA 75%, PFOS 70%, PFBA 22% (EPA 2020 / Long 2023)")
         else:
             col_left, col_right = st.columns(2)
             with col_left:
