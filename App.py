@@ -224,9 +224,9 @@ R_gas   = 8.314
 
 # Per-compound OH-radical rate constants, L/(mol·s)
 K_OH_PFAS = {
-    "PFOA": 3e5,    # [YOUR SOURCE]
-    "PFOS": 1e5,    # [YOUR SOURCE]
-    "PFBA": 9.31e7, # [YOUR SOURCE]
+    "PFOA": 3e5,    # Qian et al., 2016
+    "PFOS": 1e5,    # Vecitis et al., 2009
+    "PFBA": 9.31e7, # Qian et al., 2016
 }
 K_OH_DEFAULT = 3e5  # fallback for any unlisted compound
 
