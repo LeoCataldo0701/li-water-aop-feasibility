@@ -686,8 +686,10 @@ elif page == "Compare Treatments":
             else:
                 msg = f"GAC achieves higher removal for {gw}/{len(results)} compounds at these conditions."
                 if any_fail: msg += " Note: GAC fails on short-chain PFAS also present here."
-                st.warning(msg) if any_fail else st.info(msg)
-
+                if any_fail:
+                    st.warning(msg)
+                else:
+                    st.info(msg)
             st.markdown("### Full comparison")
             st.dataframe([{"Compound": c, "Level (ng/L)": f"{d['level_ng_l']:.1f}", "Fenton removal": f"{d['fenton_removal']:.0f}%", "GAC removal": f"{d['gac_removal']:.0f}%", "Fenton $/L": f"${d['fenton_cost']:.4f}", "GAC $/L": f"${d['gac_cost']:.4f}", "Fenton $/µg": f"${d['fenton_cost_per_ug']:.4f}", "GAC $/µg": f"${d['gac_cost_per_ug']:.4f}", "Removal winner": "Photo-Fenton" if d["fenton_wins_removal"] else "GAC", "Cost winner": "Photo-Fenton" if d["fenton_wins_cost"] else "GAC"} for c, d in results.items()], use_container_width=True)
             with st.expander("Conditions used in this run"):
