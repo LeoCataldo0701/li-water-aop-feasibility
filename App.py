@@ -346,8 +346,7 @@ if page == "Home":
             WellGuard
         </div>
         <div style="font-size:1rem;color:#94a3b8;max-width:520px;line-height:1.7;">
-            Real contamination data from the BOMARC site investigation. Local health officials.
-            Treatment feasibility modeling. Built for Long Island residents.
+            Real contamination data from Long Island. Built for Long Island residents. Voice your concerns.
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -355,9 +354,9 @@ if page == "Home":
     c1, c2, c3, c4 = st.columns(4)
     cards = [
         (c1, "Contact a local official", "Generate a letter to your town's health department.", "Report Contamination"),
-        (c2, "Compare treatment options", "Model Photo-Fenton AOP vs. carbon filtration at your well.", "Compare Treatments"),
+        (c2, "Compare treatment options", "Evaluate different treatments for each situation", "Compare Treatments"),
         (c3, "Understand the issue", "What PFAS are, where they came from, and why they matter.", "The Issue"),
-        (c4, "Test your property", "Find NYS-certified labs and step-by-step sampling guides.", "Testing Kits"),
+        (c4, "Test your property", "Find out how to order and perform sampling yourself", "Testing Kits"),
     ]
     for col, label, sub, target in cards:
         with col:
@@ -371,7 +370,7 @@ if page == "Home":
     <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:14px 20px;display:flex;align-items:center;gap:12px;">
         <div style="width:8px;height:8px;border-radius:50%;background:#ea580c;flex-shrink:0;"></div>
         <div style="font-size:0.875rem;color:#9a3412;">
-            <strong>Active contamination:</strong> PFOA, PFOS, and PFBA detected at the BOMARC site (Westhampton) at levels up to 15x above New York's 10 ng/L safe limit as of the 2024 Suffolk County investigation.
+            <strong>Active contamination:</strong> PFOA, PFOS, and PFBA detected at the BOMARC site (Westhampton) at levels up to 15x above New York's 10 ng/L safe limit as of 2024.
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -393,9 +392,9 @@ elif page == "The Issue":
         st.image("newPFOA.png", caption="PFOA molecular structure", use_container_width=True)
     with col_b:
         st.markdown("""
-        Per- and polyfluoroalkyl substances (PFAS): a class of synthetic chemicals used since the 1950s in cookware, fabrics, food packaging, and military firefighting foam (AFFF), causing the contamination at BOMARC.
+        Per- and polyfluoroalkyl substances (PFAS): a class of synthetic chemicals used in cookware, fabrics, food packaging, and military firefighting foam (AFFF), all contributing to Long Island's contamination.
 
-        The C-F bond is one of the strongest in chemistry. PFAS do not break down in soil, water, or the human body. Concentrations accumulate over decades of exposure. The body CANNOT breakdown PFAS faster than it accumulates. **Prevention is the best option**
+        The C-F bond is one of the strongest in chemistry. PFAS don't break down in soil, water, or human bodies. Concentrations accumulate over decades. **Prevention is the best option**
         """)
 
     st.markdown('<hr style="border-color:#e2e8f0;margin:20px 0;">', unsafe_allow_html=True)
@@ -404,8 +403,8 @@ elif page == "The Issue":
     h1, h2, h3 = st.columns(3)
     for col, title, text in [
         (h1, "Cancer",            "Studies link chronic PFAS exposure to elevated rates of kidney, testicular, and thyroid cancer rates. PFOA: classified as a likely carcinogen"),
-        (h2, "Development","PFAS cross the placental barrier and are present in breast milk. Exposure as a baby causes immune suppression and hormone disruption in children."),
-        (h3, "Cardiovascular",    "Chronic exposure correlates with elevated LDL cholesterol and liver enzyme abnormalities, risk factors for cardiovascular disease."),
+        (h2, "Development","PFAS are present in breast milk. Exposure as a baby causes immune suppression and hormone disruption."),
+        (h3, "Cardiovascular",    "Chronic exposure correlates with elevated cardiovascular disease."),
     ]:
         with col:
             st.markdown(f'<div class="data-card alert"><div style="font-weight:600;font-size:0.9rem;margin-bottom:6px;color:#0f172a;">{title}</div><div style="font-size:0.82rem;color:#475569;line-height:1.6;">{text}</div></div>', unsafe_allow_html=True)
