@@ -593,13 +593,15 @@ elif page == "Compare Treatments":
         st.markdown("---")
         st.markdown("#### Rate constants")
         st.dataframe([
-            {"Symbol": "k_PFAS", "Value": "1 × 10⁷ L/(mol·s)", "Reaction": "OH + PFOA", "Source": "Hori et al. 2004"},
+            {"Symbol": "k_PFOA", "Value": "3 × 10^5 L/(mol·s)", "Reaction": "OH + PFOA", "Source": "Qian et al. 2016"},
+            {"Symbol": "k_PFOS", "Value": "1 × 10^5 L/(mol·s)", "Reaction": "OH + PFOA", "Source": " Veecitis et al. 2009"},
+            {"Symbol": "k_PFBA", "Value": "9.3 × 10⁷ L/(mol·s)", "Reaction": "OH + PFOA", "Source": "Qian et al. 2016"},
             {"Symbol": "k_I",    "Value": "3.0 × 10⁸ L/(mol·s)", "Reaction": "OH + intermediates (lumped)", "Source": "estimated"},
             {"Symbol": "k_s",    "Value": "2.0 × 10⁴ s⁻¹", "Reaction": "background OH scavenging", "Source": "field estimate"},
             {"Symbol": "k_scav", "Value": "2.7 × 10⁷ L/(mol·s)", "Reaction": "OH + H₂O₂", "Source": "Buxton et al. 1988"},
-            {"Symbol": "k_Fe",   "Value": "2.3 × 10⁸ L/(mol·s)", "Reaction": "Fe²⁺ + OH", "Source": "Walling 1975"},
-            {"Symbol": "k_hv",   "Value": "5 × 10⁻⁴ s⁻¹", "Reaction": "H₂O₂ photolysis", "Source": "UV-A lamp estimate"},
-            {"Symbol": "k_hv_Fe","Value": "3.5 × 10⁻⁴ s⁻¹", "Reaction": "Fe³⁺ photoreduction", "Source": "De Laat & Gallard 1999"},
+            {"Symbol": "k_Fe",   "Value": "3 × 10^6 L/(mol·s)", "Reaction": "Fe²⁺ + OH", "Source": "Walling 1975"},
+            {"Symbol": "k_hv_H2O2",   "Value": "5 × 10⁻⁴ s⁻¹", "Reaction": "H₂O₂ photolysis", "Source": "UV-A lamp estimate"},
+            {"Symbol": "k_hv_Fe", "Value": "1 × 10^-2 s⁻¹", "Reaction": "Fe³⁺ photoreduction", "Source": "De Laat & Gallard 1999"},
         ], use_container_width=True)
         st.caption("Validation pending. These results are for feasibility screening only.")
 
