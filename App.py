@@ -403,7 +403,7 @@ elif page == "The Issue":
 
     h1, h2, h3 = st.columns(3)
     for col, title, text in [
-        (h1, "Cancer",            "Studies link chronic PFAS exposure to elevated of kidney, testicular, and thyroid cancer rates. PFOA: classified as a likely carcinogen"),
+        (h1, "Cancer",            "Studies link chronic PFAS exposure to elevated rates of kidney, testicular, and thyroid cancer rates. PFOA: classified as a likely carcinogen"),
         (h2, "Development","PFAS cross the placental barrier and are present in breast milk. Exposure as a baby causes immune suppression and hormone disruption in children."),
         (h3, "Cardiovascular",    "Chronic exposure correlates with elevated LDL cholesterol and liver enzyme abnormalities, risk factors for cardiovascular disease."),
     ]:
