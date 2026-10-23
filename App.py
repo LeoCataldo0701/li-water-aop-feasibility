@@ -718,7 +718,7 @@ elif page == "FAQs":
         ("What can be done about contamination in my well?",
          "In the short term, NSF/ANSI 58-certified reverse osmosis systems reduce PFAS at the point of use and can be installed under a kitchen sink. For long-term remediation, options include connection to a treated municipal supply, installation of whole-house AOP treatment, or formal remediation efforts by the responsible party (military or industrial). If a specific source is identifiable, legal remedies may also apply."),
         ("What is the BOMARC site?",
-         "The BOMARC missile site in Westhampton Beach was an Air National Guard installation active from the late 1950s through the 1970s. PFAS-containing aqueous film-forming foam (AFFF) was used in fire training and suppression during that period. Suffolk County DOHS investigations in 2020 and 2024 confirmed PFAS contamination in surrounding groundwater monitoring wells at levels up to 12x above the NYS limit."),
+         "The BOMARC missile site in Westhampton Beach was an Air National Guard installation active from the late 1950s through the 1970s. PFAS-containing aqueous film-forming foam (AFFF) was used in fire training and suppression during that period. Suffolk County DOHS investigations in 2020 and 2024 confirmed PFAS contamination in surrounding groundwater monitoring wells at levels up to 15x above the NYS limit."),
         ("What are New York's legal limits for PFAS?",
          "New York State MCLs effective 2023: PFOA, PFOS, PFBA, PFHxS, PFBS, and NEtFOSAA, each at 10 ng/L. These are among the strictest PFAS drinking water standards in the US, and more stringent than the EPA's 2024 federal MCLs on some compounds."),
         ("Why does carbon filtration fail on some PFAS compounds?",
