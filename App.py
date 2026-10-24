@@ -39,10 +39,10 @@ TOWN_OFFICIALS = {
 }
 
 ELAP_LABS = [
-    {"name": "Pace Analytical Services, LLC", "address": "575 Broad Hollow Rd, Melville, NY 11747", "county": ["Nassau", "Suffolk"], "phone": "(516) 370-6000", "url": "https://www.pacelabs.com/analytical-environmental/pfas/", "pfas_panel": "EPA 533 / 537.1", "notes": "Can mail in water samples"},
-    {"name": "Suffolk County Private Well Water Testing Program", "address": "360 Yaphank Avenue, Suite 1C, Yaphank, NY 11980", "county": "Suffolk", "phone": "(631) 852-5810.", "url": "https://suffolkcountyny.gov/Departments/Health-Services/Environmental-Quality/Water-Resources/Private-Well-Water-Testing-Program?", "pfas_panel": "EPA 537.1", "notes": "County residents may qualify for subsidized testing."},
-    {"name": "Long Island Analytical Laboratories, Inc.", "address": "110 Colin Dr, Holbrook, NY 11741", "county": ["Nassau", "Suffolk"], "phone": "(631) 472-3400", "url": "https://www.lialinc.com/what-we-do", "pfas_panel": "NYS ELAP-certified drinking water analysis", "notes": "Get shipped a kit or mail in a sample"},
-    {"name": "Tap Score", "address": "1345 4th St. Berkeley, CA 94710", "county": "Regional", "phone": "(510)485-9396", "url": "https://mytapscore.com/products/pfas-water-test?country=US%C2%A4cy=USD&variant=29243769651297&utm_source=chatgpt.com", "pfas_panel": "EPA 537.1", "notes": "Full kit shipping option"},
+    {"name": "Pace Analytical Services, LLC", "address": "575 Broad Hollow Rd, Melville, NY 11747", "county": ["Nassau", "Suffolk"], "phone": "(516) 370-6000", "url": "https://www.pacelabs.com/analytical-environmental/pfas/", "pfas_panel": "EPA 533 / 537.1", "notes": "Commercial lab. Can mail in water samples."},
+    {"name": "Suffolk County Private Well Water Testing Program", "address": "360 Yaphank Avenue, Suite 1C, Yaphank, NY 11980", "county": ["Suffolk"], "phone": "(631) 852-5810", "url": "https://suffolkcountyny.gov/Departments/Health-Services/Environmental-Quality/Water-Resources/Private-Well-Water-Testing-Program", "pfas_panel": "County private well program (PFAS plus about 300 contaminants)", "notes": "Government program, not a private lab. County residents may qualify for subsidized testing."},
+    {"name": "Long Island Analytical Laboratories, Inc.", "address": "110 Colin Dr, Holbrook, NY 11741", "county": ["Nassau", "Suffolk"], "phone": "(631) 472-3400", "url": "https://www.lialinc.com/what-we-do", "pfas_panel": "EPA 533 / 537.1 (NYS-accredited)", "notes": "Commercial lab. Can ship a kit or accept a mailed sample."},
+    {"name": "Tap Score", "address": "1345 4th St. Berkeley, CA 94710", "county": ["Regional"], "phone": "(510) 485-9396", "url": "https://mytapscore.com/products/pfas-water-test", "pfas_panel": "EPA 537.1 (18 analytes)", "notes": "Kit provider, not a lab. Samples are analyzed by a partner lab. Full kit shipping option."},
 ]
 
 # ─────────────────────────────────────────
@@ -370,7 +370,7 @@ if page == "Home":
     <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:14px 20px;display:flex;align-items:center;gap:12px;">
         <div style="width:8px;height:8px;border-radius:50%;background:#ea580c;flex-shrink:0;"></div>
         <div style="font-size:0.875rem;color:#9a3412;">
-            <strong>Active contamination:</strong> PFOA, PFOS, and PFBA detected at the BOMARC site (Westhampton) at levels up to 15x above New York's 10 ng/L safe limit as of 2024.
+            <strong>Active contamination:</strong> PFOA, PFOS, and PFBA detected at the BOMARC site (Westhampton) at levels up to 12x above New York's 10 ng/L safe limit as of 2024.
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -593,8 +593,8 @@ elif page == "Compare Treatments":
         st.markdown("#### Rate constants")
         st.dataframe([
             {"Symbol": "k_PFOA", "Value": "3 × 10^5 L/(mol·s)", "Reaction": "OH + PFOA", "Source": "Qian et al. 2016"},
-            {"Symbol": "k_PFOS", "Value": "1 × 10^5 L/(mol·s)", "Reaction": "OH + PFOA", "Source": "Vecitis et al. 2009"},
-            {"Symbol": "k_PFBA", "Value": "9.3 × 10⁷ L/(mol·s)", "Reaction": "OH + PFOA", "Source": "Qian et al. 2016"},
+            {"Symbol": "k_PFOS", "Value": "1 × 10^5 L/(mol·s)", "Reaction": "OH + PFOS", "Source": "Vecitis et al. 2009"},
+            {"Symbol": "k_PFBA", "Value": "9.3 × 10⁷ L/(mol·s)", "Reaction": "OH + PFBA", "Source": "Qian et al. 2016"},
             {"Symbol": "k_I",    "Value": "3.0 × 10⁸ L/(mol·s)", "Reaction": "OH + intermediates (lumped)", "Source": "estimated"},
             {"Symbol": "k_s",    "Value": "2.0 × 10⁴ s⁻¹", "Reaction": "background OH scavenging", "Source": "field estimate"},
             {"Symbol": "k_scav", "Value": "2.7 × 10⁷ L/(mol·s)", "Reaction": "OH + H₂O₂", "Source": "Buxton et al. 1988"},
@@ -718,7 +718,7 @@ elif page == "FAQs":
         ("What can be done about contamination in my well?",
          "In the short term, NSF/ANSI 58-certified reverse osmosis systems reduce PFAS at the point of use and can be installed under a kitchen sink. For long-term remediation, options include connection to a treated municipal supply, installation of whole-house AOP treatment, or formal remediation efforts by the responsible party (military or industrial). If a specific source is identifiable, legal remedies may also apply."),
         ("What is the BOMARC site?",
-         "The BOMARC missile site in Westhampton Beach was an Air National Guard installation active from the late 1950s through the 1970s. PFAS-containing aqueous film-forming foam (AFFF) was used in fire training and suppression during that period. Suffolk County DOHS investigations in 2020 and 2024 confirmed PFAS contamination in surrounding groundwater monitoring wells at levels up to 15x above the NYS limit."),
+         "The BOMARC missile site in Westhampton Beach was an Air National Guard installation active from the late 1950s through the 1970s. PFAS-containing aqueous film-forming foam (AFFF) was used in fire training and suppression during that period. Suffolk County DOHS investigations in 2020 and 2024 confirmed PFAS contamination in surrounding groundwater monitoring wells at levels up to 12x above the NYS limit."),
         ("What are New York's legal limits for PFAS?",
          "New York State MCLs effective 2023: PFOA, PFOS, PFBA, PFHxS, PFBS, and NEtFOSAA, each at 10 ng/L. These are among the strictest PFAS drinking water standards in the US, and more stringent than the EPA's 2024 federal MCLs on some compounds."),
         ("Why does carbon filtration fail on some PFAS compounds?",
@@ -735,17 +735,16 @@ elif page == "FAQs":
 
 # ═══════════════════════════════════════════
 # TESTING KITS
-# ═══════════════════════════════════════════
-elif page == "Testing Kits":
+# ═══════════════════════════════════════════elif page == "Testing Kits":
     st.markdown("## Testing Your Private Well")
-    st.markdown("If your home relies on a private well, county & state agencies do not test your water on your behalf. The steps below walk you through ordering a test, collecting a valid sample, and interpreting your results.")
+    st.markdown("If your home relies on a private well, you are responsible for testing it. Suffolk County and New York State both offer private well PFAS testing programs; Nassau residents currently must use private labs or kit providers. The steps below walk you through ordering a test, collecting a valid sample, and interpreting your results.")
     st.markdown('<hr style="border-color:#e2e8f0;margin-bottom:24px;">', unsafe_allow_html=True)
 
     kit_tab, checklist_tab, howto_tab = st.tabs(["Lab Directory", "Sampling Checklist", "Step-by-Step Guide"])
 
     with kit_tab:
-        st.markdown("### NYS ELAP-Certified Labs — Long Island")
-        st.markdown("These laboratories are certified by New York State for PFAS analysis and serve Long Island residents. All will ship HDPE collection bottles to your address on request.")
+        st.markdown("### Testing Options — Long Island")
+        st.markdown("Not all of these are labs. The Suffolk County program is a government service, and Tap Score is a kit provider that sends samples to a partner lab. Confirm a lab's accreditation for your specific test before using results for regulatory purposes.")
 
         county_filter = st.radio("Filter:", ["All", "Nassau", "Suffolk", "Regional"], horizontal=True)
         for lab in ELAP_LABS:
@@ -766,54 +765,55 @@ elif page == "Testing Kits":
         st.markdown("### Before you collect a sample")
         st.markdown("Errors in sample collection are the most common reason results are invalidated. Work through this list before you start.")
         steps = [
-            ("Order an HDPE kit from a certified lab", "Contact one of the labs in the directory. Request a PFAS sampling kit for EPA Method 533 or 537.1. They ship pre-preserved HDPE bottles to your address."),
-            ("Do not use standard plastic bottles", "PFAS adsorb to ordinary plastic (PET, HDPE). Only use containers supplied by your lab. Glass is acceptable if the lab confirms it."),
-            ("Flush the cold water tap for 5 minutes", "This clears stagnant water from the pipes and gives you a sample representative of your well, not pipe residuals."),
-            ("Sample before any point-of-use filter", "If you have an under-sink RO system or carbon filter, sample the unfiltered tap. You want to measure the well, not the filter output."),
-            ("Fill to the marked line and cap immediately", "Minimize air contact. Cap within seconds of filling."),
-            ("Keep at 2–6°C and ship within 24 hours", "Use the ice pack your lab provides. Most labs accept FedEx or UPS overnight."),
-            ("Complete the chain-of-custody form", "Note the sample date, time, tap location, and any filters bypassed. Include this form with your shipment."),
+            ("Get a kit from an accredited lab", "Use a lab from the directory, or the NYS pilot if you qualify. Kits include pre-preserved bottles, a field blank, gloves, and a chain-of-custody form."),
+            ("Use only lab-supplied bottles", "Bottles must be HDPE or polypropylene and pre-preserved (Trizma for EPA 537.1, ammonium acetate for EPA 533). Do not rinse them, use bottles from home, or use Teflon-lined caps."),
+            ("Remove the faucet aerator and run cold water about 5 minutes", "This clears standing water from the pipes so you sample the well. Slow the flow to a pencil-thin stream before filling. Follow your lab's instructions if they differ."),
+            ("Sample raw water, or post-treatment to test a filter", "Collect before any filter to test the well. Collect after treatment to verify that an RO or carbon system is working."),
+            ("Fill to the shoulder line and do not overfill or rinse", "Overfilling or rinsing washes out the preservative. Cap tightly and invert the bottle about 5 times to mix."),
+            ("Keep cool and deliver within 48 hours", "Keep samples at or below 10°C and above freezing. Use bagged ice, not blue ice packs. Schedule collection right before overnight pickup and check your lab's receiving days."),
+            ("Include the field blank and complete chain of custody", "Follow the kit's field blank instructions. Label each bottle with location, date, and time, and fill out the chain-of-custody form."),
         ]
         for i, (title, desc) in enumerate(steps, 1):
             with st.expander(f"{i}. {title}"):
                 st.markdown(f'<div style="font-size:0.875rem;color:#374151;line-height:1.7;">{desc}</div>', unsafe_allow_html=True)
-        st.info("Sample first thing in the morning, before any water use, for the most representative result.")
+        st.info("Plan shipping so samples arrive at the lab within 48 hours of collection.")
 
     with howto_tab:
         st.markdown("### From order to results")
         st.markdown("""
 **1. Choose your panel**
 
-At minimum, order a panel covering the 6 NYS-regulated compounds: PFOA, PFOS, PFBA, PFHxS, PFBS, NEtFOSAA. If you live near the BOMARC site, a military installation, or an industrial facility, a 40-compound panel (EPA Method 533) provides broader coverage.
+NYS enforceable standards currently cover PFOA and PFOS at 10 ng/L. EPA's 2024 federal rule adds PFHxS, PFNA, and GenX at 10 ng/L and tightens PFOA and PFOS to 4 ng/L by 2029. EPA Method 533 covers 25 PFAS and Method 537.1 covers 18. Order a panel that includes PFOA and PFOS at minimum.
 
 **2. Order and receive your kit**
 
-Contact a lab from the directory. Provide your address and request PFAS sampling materials. They will send HDPE bottles with a chain-of-custody form. Typical turnaround for kit delivery is 2–5 days. Testing cost ranges from $150–$400 depending on panel size.
+Contact a lab or program from the directory. Provide your address and request PFAS sampling materials. Kits include HDPE or polypropylene bottles, a field blank, and a chain-of-custody form. Commercial PFAS panels typically cost several hundred dollars. Eligible Suffolk private-well owners may qualify for free testing through the NYS pilot.
 
 **3. Collect your sample**
 
-Follow the checklist on the previous tab. The most common errors: not flushing long enough, sampling downstream of a filter, using the wrong container.
+Follow the checklist on the previous tab. The most common errors: skipping the aerator removal, overfilling, rinsing the bottle, and sampling downstream of a filter when testing the well.
 
-**4. Ship overnight with the ice pack provided**
+**4. Ship overnight with bagged ice**
 
-Most labs specify FedEx or UPS overnight. Results return as a PDF within 10–14 business days showing ng/L concentrations per compound.
+Keep samples at or below 10°C. Samples must arrive within 48 hours of collection. Results typically take about 1–2 weeks, depending on the lab.
 
 **5. Interpret your results**
 
-Compare each compound against NYS MCLs (10 ng/L). If any compound exceeds the limit:
-- Contact your county health department (Suffolk DOHS: (631) 853-3000 / Nassau DOHS: (516) 227-9717)
-- Use the Report Contamination page to contact your local official on record
-- Install an NSF/ANSI 58-certified reverse osmosis system at the point of use as an interim measure
-- Do not use unfiltered tap water for drinking or cooking until the situation is assessed
+Compare each result against the applicable standard. NYS enforceable limits are 10 ng/L for PFOA and PFOS. If a result is above the limit:
+- Suffolk private wells: contact the Suffolk County Office of Water Resources at (631) 852-5810.
+- Nassau private wells: contact the Nassau County Department of Health for guidance.
+- Use the Report Contamination page to contact your local official on record.
+- Ask your county health department what to do about drinking water while results are pending. Point-of-use NSF/ANSI 58 reverse osmosis systems are a common interim option.
         """)
 
         st.markdown('<hr style="border-color:#e2e8f0;margin:16px 0;">', unsafe_allow_html=True)
         st.markdown("**Reference links**")
         for name, url in [
             ("NYS ELAP Certified Lab Finder", "https://www.health.ny.gov/environmental/water/drinking/certified_lab/"),
+            ("NYS Private Well PFAS Testing and Mitigation Rebate Pilot", "https://www.health.ny.gov/environmental/water/drinking/privatewellspilot/"),
             ("EPA PFAS Testing Methods (537.1 and 533)", "https://www.epa.gov/water-research/pfas-analytical-methods-development-and-sampling-research"),
             ("NSF/ANSI 58 Certified Reverse Osmosis Filters", "https://www.nsf.org/consumer-resources/articles/certified-reverse-osmosis-systems"),
-            ("Suffolk County Private Well Guidance", "https://www.suffolkcountyny.gov/Departments/Health-Services/Environmental-Quality/Water-Resources/Private-Well"),
+            ("Suffolk County Water Resources", "https://www.suffolkcountyny.gov/Departments/Health-Services/Environmental-Quality/Water-Resources"),
         ]:
             st.markdown(f'<a href="{url}" target="_blank" style="display:block;font-size:0.875rem;color:#0ea5e9;margin-bottom:6px;text-decoration:none;">{name}</a>', unsafe_allow_html=True)
         st.caption("WellGuard provides this information for educational purposes. For health emergencies, contact your county health department.")
