@@ -735,7 +735,8 @@ elif page == "FAQs":
 
 # ═══════════════════════════════════════════
 # TESTING KITS
-# ═══════════════════════════════════════════elif page == "Testing Kits":
+# ═══════════════════════════════════════════
+elif page == "Testing Kits":
     st.markdown("## Testing Your Private Well")
     st.markdown("If your home relies on a private well, you are responsible for testing it. Suffolk County and New York State both offer private well PFAS testing programs; Nassau residents currently must use private labs or kit providers. The steps below walk you through ordering a test, collecting a valid sample, and interpreting your results.")
     st.markdown('<hr style="border-color:#e2e8f0;margin-bottom:24px;">', unsafe_allow_html=True)
