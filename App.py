@@ -700,7 +700,7 @@ elif page == "Compare Treatments":
         else:
             col_left, col_right = st.columns(2)
             with col_left:
-                st.markdown('<div class="data-card success"><b>Photo-Fenton AOP</b><br><span style="font-size:0.85rem;color:#475569;">Iron + hydrogen peroxide + UV generates hydroxyl radicals that break C–F bonds directly. Effective on all PFAS chain lengths. No hazardous waste stream.</span></div>', unsafe_allow_html=True)
+                st.markdown('<div class="data-card success"><b>Photo-Fenton AOP</b><br><span style="font-size:0.85rem;color:#475569;">Iron + hydrogen peroxide + UV generates hydroxyl radicals that break C–F bonds directly. No hazardous waste stream.</span></div>', unsafe_allow_html=True)
             with col_right:
                 st.markdown('<div class="data-card warning"><b>Granular Activated Carbon</b><br><span style="font-size:0.85rem;color:#475569;">PFAS adsorb onto carbon and are removed from water, but not destroyed. Spent carbon is hazardous waste. Adsorption efficiency drops significantly for short-chain PFAS.</span></div>', unsafe_allow_html=True)
 
