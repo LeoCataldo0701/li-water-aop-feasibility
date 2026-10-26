@@ -732,6 +732,27 @@ elif page == "FAQs":
         with st.expander(f"**{q}**"):
             st.markdown(f'<div style="font-size:0.875rem;color:#374151;line-height:1.7;padding:4px 0;">{a}</div>', unsafe_allow_html=True)
     st.caption("Sources: Suffolk County DOHS, EPA, NYS DEC, SDWA, USGS Finkelstein et al. 2025")
+    st.markdown("## Security and Privacy")
+    st.markdown("WellGuard is built to reduce security and privacy risk for the people who use it.")
+
+    for title, text in [
+        ("What we collect",
+         "WellGuard does not require an account and does not store your name, address, or letter text. Anything you type stays in your browser session and is cleared when you close the page."),
+        ("What we send",
+         "Only the email client you choose receives your letter, and only when you click 'Open in email client.' WellGuard does not send your data to our servers or any third party."),
+        ("Data in the app",
+         "Contamination values and well data are static, published figures from public investigations. They are not personal data."),
+        ("Safe use",
+         "Before you click a link, confirm it goes to a .gov or official lab website. Never give your passwords, Social Security number, or bank details to anyone who contacts you about water testing."),
+    ]:
+        st.markdown(f'<div class="data-card info"><div style="font-weight:600;margin-bottom:6px;">{title}</div><div style="font-size:0.85rem;color:#475569;line-height:1.6;">{text}</div></div>', unsafe_allow_html=True)
+
+    st.markdown("### Take9 Pledge")
+    st.markdown('''<div class="data-card success">
+    <div style="font-weight:600;margin-bottom:6px;">I pledge to consider the cybersecurity of my app and its users.</div>
+    <div style="font-size:0.85rem;color:#475569;line-height:1.6;">
+    Take9 encourages people to pause and think before clicking, downloading, or sharing online. In building WellGuard, I considered what data the app collects, how that data is protected, and how the design reduces security risks. Learn more at <a href="https://www.take9.org" target="_blank">take9.org</a>.
+    </div></div>''', unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════
 # TESTING KITS
