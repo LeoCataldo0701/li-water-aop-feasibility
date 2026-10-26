@@ -747,12 +747,6 @@ elif page == "FAQs":
     ]:
         st.markdown(f'<div class="data-card info"><div style="font-weight:600;margin-bottom:6px;">{title}</div><div style="font-size:0.85rem;color:#475569;line-height:1.6;">{text}</div></div>', unsafe_allow_html=True)
 
-    st.markdown("### Take9 Pledge")
-    st.markdown('''<div class="data-card success">
-    <div style="font-weight:600;margin-bottom:6px;">I pledge to consider the cybersecurity of my app and its users.</div>
-    <div style="font-size:0.85rem;color:#475569;line-height:1.6;">
-    Take9 encourages people to pause and think before clicking, downloading, or sharing online. In building WellGuard, I considered what data the app collects, how that data is protected, and how the design reduces security risks. Learn more at <a href="https://www.take9.org" target="_blank">take9.org</a>.
-    </div></div>''', unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════
 # TESTING KITS
