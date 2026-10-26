@@ -525,15 +525,14 @@ elif page == "Report Contamination":
 
     st.markdown("**Your letter**")
     st.text_area("", body, height=260, disabled=True, label_visibility="collapsed")
-    ca, cb = st.columns(2)
-    with ca:
-        if st.button("Copy letter", type="primary", use_container_width=True):
-            st.success("Copy the text from the box above.")
-            st.code(body, language="text")
-    with cb:
-        encoded_subject = urllib.parse.quote(subject)
-        st.link_button("Open in email", f"mailto:{official_email}?subject={encoded_subject}", use_container_width=True)
-
+    if st.button("Copy letter", type="primary", use_container_width=True):
+        st.success("Copy the text from the box above.")
+        st.code(body, language="text")
+    st.markdown(
+        f'<div style="font-size:0.82rem;color:#64748b;margin-top:8px;">'
+        f'Or email directly to: <strong>{official_email}</strong></div>',
+        unsafe_allow_html=True
+    )
     st.markdown('<hr style="border-color:#e2e8f0;margin:20px 0;">', unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
     with col1:
