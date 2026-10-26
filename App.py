@@ -720,7 +720,7 @@ elif page == "FAQs":
         ("What is the BOMARC site?",
          "The BOMARC missile site in Westhampton Beach was an Air National Guard installation active from the late 1950s through the 1970s. PFAS-containing aqueous film-forming foam (AFFF) was used in fire training and suppression during that period. Suffolk County DOHS investigations in 2020 and 2024 confirmed PFAS contamination in surrounding groundwater monitoring wells at levels up to 12x above the NYS limit."),
         ("What are New York's legal limits for PFAS?",
-         "New York State MCLs effective 2023: PFOA, PFOS, PFBA, PFHxS, PFBS, and NEtFOSAA, each at 10 ng/L. These are among the strictest PFAS drinking water standards in the US, and more stringent than the EPA's 2024 federal MCLs on some compounds."),
+         "New York State MCLs effective 2023: PFOA, PFOS, PFHxS, PFBS, and NEtFOSAA, each at 10 ng/L. There are no current limits on PFBA, but they have adverse effects and are in the talks of future regulation. These are among the strictest PFAS drinking water standards in the US, and more stringent than the EPA's 2024 federal MCLs on some compounds."),
         ("Why does carbon filtration fail on some PFAS compounds?",
          "Granular Activated Carbon removes PFAS through adsorption: molecules adhere to the carbon surface via van der Waals forces. This mechanism favors larger, long-chain PFAS like PFOA (75% removal) and PFOS (70% removal). Short-chain compounds such as PFBA have lower molecular weight and weaker interactions with the carbon surface, yielding removal rates as low as 22%. Sites with mixed PFAS contamination, like BOMARC, present compounds that GAC cannot adequately address."),
         ("Can I take legal action over PFAS contamination?",
