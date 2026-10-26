@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
+import urllib.parse
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -530,7 +531,8 @@ elif page == "Report Contamination":
             st.success("Copy the text from the box above.")
             st.code(body, language="text")
     with cb:
-        st.link_button("Open in email", f"mailto:{official_email}?subject={subject}", use_container_width=True)
+        encoded_subject = urllib.parse.quote(subject)
+        st.link_button("Open in email", f"mailto:{official_email}?subject={encoded_subject}", use_container_width=True)
 
     st.markdown('<hr style="border-color:#e2e8f0;margin:20px 0;">', unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
