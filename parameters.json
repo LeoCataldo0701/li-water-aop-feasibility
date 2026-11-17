@@ -1,0 +1,68 @@
+{
+  "_comment": "Photo-Fenton kinetic parameters. Each entry has value, units, source, and status.",
+  "_status_key": {
+    "literature": "Directly measured value from peer-reviewed source.",
+    "placeholder": "Order-of-magnitude estimate. Needs calibration.",
+    "uncalibrated": "Structurally correct form but magnitude depends on lamp/reactor spec not available here."
+  },
+  "k_f_ref": {
+    "value": 63.0,
+    "units": "L/(mol*s)",
+    "status": "literature",
+    "source": "Walling 1975, Acc. Chem. Res. Measured at 25 C, pH ~3."
+  },
+  "k_r_ref": {
+    "value": 8.4e-6,
+    "units": "L/(mol*s)",
+    "status": "literature",
+    "source": "Walling 1975, Acc. Chem. Res."
+  },
+  "k_scav": {
+    "value": 2.7e7,
+    "units": "L/(mol*s)",
+    "status": "literature",
+    "source": "Buxton et al. 1988, J. Phys. Chem. Ref. Data. OH + H2O2."
+  },
+  "k_Fe": {
+    "value": 3.0e6,
+    "units": "L/(mol*s)",
+    "status": "literature",
+    "source": "Walling 1975. Fe2+ + OH."
+  },
+  "k_I": {
+    "value": 3.0e8,
+    "units": "L/(mol*s)",
+    "status": "placeholder",
+    "source": "Lumped intermediate scavenging. Assumed similar to k_scav. Not independently measured."
+  },
+  "k_s": {
+    "value": 2.0e4,
+    "units": "1/s",
+    "status": "placeholder",
+    "source": "Background OH scavenging by dissolved organics. Field-dependent. Order-of-magnitude estimate."
+  },
+  "k_hv_h2o2": {
+    "value": 5.0e-4,
+    "units": "1/s",
+    "status": "uncalibrated",
+    "source": "Representative UV-A lamp estimate. Scales with photon flux (E_p) and H2O2 molar absorption coefficient (epsilon = 18.6 L/(mol*cm) at 254 nm). Requires lamp spec to calibrate."
+  },
+  "k_hv_fe": {
+    "value": 1.0e-2,
+    "units": "1/s",
+    "status": "uncalibrated",
+    "source": "Fe3+ photoreduction rate. De Laat & Gallard 1999, Environ. Sci. Technol. Lamp-dependent."
+  },
+  "Ea_J_mol": {
+    "value": 50000.0,
+    "units": "J/mol",
+    "status": "literature",
+    "source": "Activation energy for Fenton reaction. De Laat & Gallard 1999."
+  },
+  "T_ref_K": {
+    "value": 298.15,
+    "units": "K",
+    "status": "literature",
+    "source": "Reference temperature for Arrhenius correction (25 C)."
+  }
+}

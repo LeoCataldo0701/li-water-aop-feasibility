@@ -1,0 +1,69 @@
+{
+  "_comment": "PFAS compound properties for photo-Fenton screening model.",
+  "_units": {
+    "molar_mass": "g/mol",
+    "k_OH": "L/(mol*s)",
+    "gac_removal_fraction": "dimensionless (0-1)",
+    "regulatory_limit_ng_l": "ng/L"
+  },
+  "PFOA": {
+    "full_name": "Perfluorooctanoic acid",
+    "chain_length": 8,
+    "molar_mass": 414.07,
+    "k_OH": 3.0e5,
+    "k_OH_source": "Qian et al. 2016, Environ. Sci. Technol.",
+    "gac_removal_fraction": 0.75,
+    "gac_source": "EPA PFAS Fact Sheet 2020; Long et al. 2023",
+    "ny_mcl_ng_l": 10.0,
+    "epa_mcl_ng_l": 4.0,
+    "notes": "Long-chain PFAS. NY MCL 10 ng/L effective 2023. EPA MCL 4 ng/L (2024)."
+  },
+  "PFOS": {
+    "full_name": "Perfluorooctane sulfonic acid",
+    "chain_length": 8,
+    "molar_mass": 500.13,
+    "k_OH": 1.0e5,
+    "k_OH_source": "Vecitis et al. 2009, J. Phys. Chem. A",
+    "gac_removal_fraction": 0.70,
+    "gac_source": "EPA PFAS Fact Sheet 2020; Long et al. 2023",
+    "ny_mcl_ng_l": 10.0,
+    "epa_mcl_ng_l": 4.0,
+    "notes": "Long-chain PFAS. NY MCL 10 ng/L effective 2023. EPA MCL 4 ng/L (2024)."
+  },
+  "PFBA": {
+    "full_name": "Perfluorobutanoic acid",
+    "chain_length": 4,
+    "molar_mass": 214.04,
+    "k_OH": 9.31e7,
+    "k_OH_source": "Qian et al. 2016, Environ. Sci. Technol. Higher k_OH than long-chain compounds due to differences in C-F bond environment and radical attack geometry for short-chain PFAS.",
+    "gac_removal_fraction": 0.22,
+    "gac_source": "EPA PFAS Fact Sheet 2020; Long et al. 2023. Low value reflects weak van der Waals interactions for short-chain compounds.",
+    "ny_mcl_ng_l": null,
+    "epa_mcl_ng_l": null,
+    "notes": "Short-chain PFAS. No current NY or EPA MCL. Compared against 10 ng/L benchmark only."
+  },
+  "PFNA": {
+    "full_name": "Perfluorononanoic acid",
+    "chain_length": 9,
+    "molar_mass": 464.08,
+    "k_OH": 3.0e5,
+    "k_OH_source": "Estimated from PFOA value (same order, similar chain length). Not experimentally confirmed.",
+    "gac_removal_fraction": 0.80,
+    "gac_source": "Estimated. Long-chain PFAS adsorbs well to GAC.",
+    "ny_mcl_ng_l": 10.0,
+    "epa_mcl_ng_l": 10.0,
+    "notes": "Long-chain PFAS. k_OH is an estimate — treat results with extra caution."
+  },
+  "PFHxS": {
+    "full_name": "Perfluorohexane sulfonic acid",
+    "chain_length": 6,
+    "molar_mass": 400.11,
+    "k_OH": 1.0e5,
+    "k_OH_source": "Estimated from PFOS value (same functional group, shorter chain).",
+    "gac_removal_fraction": 0.60,
+    "gac_source": "Estimated. Medium-chain PFAS, moderate GAC adsorption.",
+    "ny_mcl_ng_l": 10.0,
+    "epa_mcl_ng_l": 10.0,
+    "notes": "Medium-chain PFAS. NY MCL 10 ng/L effective 2023. k_OH is an estimate."
+  }
+}
