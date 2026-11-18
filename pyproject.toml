@@ -1,8 +1,37 @@
-[tool.black]
-line-length = 99
-target_version = ['py311']
-exclude = '''
-(
-          /pegen/grammar_parser.py   # generated file
-)
-'''
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "photofenton"
+version = "1.0.0"
+description = "Batch photo-Fenton kinetics and reagent cost screening for PFAS-contaminated groundwater"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+keywords = ["PFAS", "water treatment", "advanced oxidation", "photo-Fenton", "environmental engineering"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Chemistry",
+]
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+]
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.7"]
+app  = ["streamlit>=1.30", "matplotlib>=3.7"]
+dev  = ["pytest>=7.0", "matplotlib>=3.7"]
+
+[tool.setuptools]
+packages = ["photofenton"]
+
+[tool.setuptools.package-data]
+photofenton = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
