@@ -1,0 +1,4 @@
+compound,initial_ng_l,ny_mcl_ng_l,multiples_over_mcl,ph_model,temp_C,fenton_removal_pct,t90_min,reagent_cost_per_L,cost_per_ug,gac_removal_pct,molar_mass_g_mol,k_OH_L_mol_s
+PFOA,120.0,10.0,12.0,3.0,12.9,2.7,not_reached,N/A,N/A,75.0,414.07,300000.0
+PFOS,45.0,10.0,4.5,3.0,12.9,0.9,not_reached,N/A,N/A,70.0,500.13,100000.0
+PFBA,18.0,10.0,1.8,3.0,12.9,100.0,12.383333333333333,0.2393,14.7744,22.0,214.04,93100000.0
