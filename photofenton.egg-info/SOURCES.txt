@@ -1,0 +1,15 @@
+LICENSE
+README.md
+pyproject.toml
+photofenton/__init__.py
+photofenton/compounds.py
+photofenton/core.py
+photofenton/parameters.py
+photofenton.egg-info/PKG-INFO
+photofenton.egg-info/SOURCES.txt
+photofenton.egg-info/dependency_links.txt
+photofenton.egg-info/requires.txt
+photofenton.egg-info/top_level.txt
+photofenton/data/compounds.json
+photofenton/data/parameters.json
+tests/test_photofenton.py
