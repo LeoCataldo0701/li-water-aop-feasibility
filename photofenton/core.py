@@ -216,6 +216,7 @@ def simulate(
         "removal_final":   float(removal[-1]),
         "t90_min":         t90_min,
         "fe_balance_error": fe_balance_error,
+        "H2O2_mM_t":       sol.y[0] * 1e3,
     }
 
 
