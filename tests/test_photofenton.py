@@ -229,3 +229,11 @@ class TestParameterSweep:
         low_dose  = next(r for r in rows if r["H2O2_mM"] == 5)
         high_dose = next(r for r in rows if r["H2O2_mM"] == 50)
         assert high_dose["removal_final"] >= low_dose["removal_final"]
+def test_sensitivity_analysis_shape_and_direction():
+    from photofenton import sensitivity_analysis
+    rows = sensitivity_analysis(
+        "PFOA", 120.0, 3.0, 25.0, 10.0, 5.0,
+        param_name="k_s", factors=(0.1, 10.0), t_end=1800,
+    )
+    assert len(rows) == 2
+    assert rows[1]["removal_final"] <= rows[0]["removal_final"]
