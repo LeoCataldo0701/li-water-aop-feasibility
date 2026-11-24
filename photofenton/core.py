@@ -348,3 +348,36 @@ def parameter_sweep(
             r["cost_per_ug"]  = cost_per_ug_removed(pfas_ng_l, cost)
             results.append(r)
     return results
+
+def sensitivity_analysis(
+    pfas_name, pfas_ng_l, pH, temp_C, H2O2_mM, Fe_uM,
+    param_name, factors=(0.1, 0.5, 2.0, 10.0), t_end=T_END_S,
+):
+    """Vary one kinetic parameter by multiplicative factors and report removal.
+
+    Parameters
+    ----------
+    param_name : str
+        Key in parameters.json, e.g. 'k_s', 'k_I', 'k_hv_fe'.
+    factors : tuple of float
+        Multipliers applied to the base value.
+
+    Returns
+    -------
+    list of dict with keys 'factor', 'param_value', 'removal_final'.
+    """
+    base = load_parameters()
+    if param_name not in base:
+        raise KeyError(f"Unknown parameter '{param_name}'. Known: {sorted(base)}")
+    results = []
+    for factor in factors:
+        modified = dict(base)
+        modified[param_name] = base[param_name] * factor
+        r = simulate(pfas_name, pfas_ng_l, pH, temp_C, H2O2_mM, Fe_uM,
+                     params=modified, t_end=t_end)
+        results.append({
+            "factor": factor,
+            "param_value": modified[param_name],
+            "removal_final": r["removal_final"],
+        })
+    return results
