@@ -34,6 +34,7 @@ from photofenton.core import (
     cost_per_ug_removed,
     arrhenius_factor,
     parameter_sweep,
+    sensitivity_analysis,
 )
 from photofenton.compounds import load_compounds, get_compound
 from photofenton.parameters import load_parameters, PARAM_STATUS
@@ -49,4 +50,5 @@ __all__ = [
     "get_compound",
     "load_parameters",
     "PARAM_STATUS",
+    "sensitivity_analysis",
 ]
