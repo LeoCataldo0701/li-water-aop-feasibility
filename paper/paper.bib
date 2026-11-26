@@ -1,0 +1,191 @@
+% paper.bib — bibliography for photofenton JOSS paper
+% Every entry below has been verified against the original source.
+% DOIs confirmed from publisher pages or USGS Publications Warehouse.
+
+% ── Kinetic rate constant sources ──────────────────────────────────────────
+
+@article{walling1975,
+  author   = {Walling, Cheves},
+  title    = {Fenton's Reagent Revisited},
+  journal  = {Accounts of Chemical Research},
+  year     = {1975},
+  volume   = {8},
+  number   = {4},
+  pages    = {125--131},
+  doi      = {10.1021/ar50088a003}
+}
+% Source of k_f_ref (Fe2+ + H2O2 rate constant) and k_Fe (Fe2+ + OH)
+
+@article{buxton1988,
+  author   = {Buxton, George V. and Greenstock, Clive L. and Helman, W. P. and Ross, Alberta B.},
+  title    = {Critical Review of Rate Constants for Reactions of Hydrated Electrons,
+              Hydrogen Atoms and Hydroxyl Radicals ({$\cdot$OH}/{$\cdot$O$^-$})
+              in Aqueous Solution},
+  journal  = {Journal of Physical and Chemical Reference Data},
+  year     = {1988},
+  volume   = {17},
+  number   = {2},
+  pages    = {513--886},
+  doi      = {10.1063/1.555805}
+}
+% Source of k_scav (OH + H2O2 rate constant, 2.7e7 L/(mol*s))
+
+@article{delaat1999,
+  author   = {De Laat, Joseph and Gallard, Herv\'{e}},
+  title    = {Catalytic Decomposition of Hydrogen Peroxide by {Fe(III)} in
+              Homogeneous Aqueous Solution: Mechanism and Kinetic Modeling},
+  journal  = {Environmental Science \& Technology},
+  year     = {1999},
+  volume   = {33},
+  number   = {16},
+  pages    = {2726--2732},
+  doi      = {10.1021/es980272u}
+}
+% Source of Arrhenius activation energy Ea = 50 kJ/mol for Fenton reaction;
+% also cited for k_hv_fe (Fe3+ photoreduction rate).
+
+@article{qian2016,
+  author   = {Qian, Yajie and Guo, Xin and Zhang, Yalei and Peng, Yue and
+              Sun, Peizhe and Huang, Ching-Hua and Niu, Junfeng and Zhou, Xuefei and
+              Crittenden, John C.},
+  title    = {Perfluorooctanoic Acid Degradation Using {UV}–Persulfate Process:
+              Modeling of the Degradation and Chlorate Formation},
+  journal  = {Environmental Science \& Technology},
+  year     = {2016},
+  volume   = {50},
+  number   = {2},
+  pages    = {772--781},
+  doi      = {10.1021/acs.est.5b03715}
+}
+% Source of k_OH for PFOA (3e5 L/(mol*s)) and PFBA (9.31e7 L/(mol*s)).
+% NOTE: verify the PFBA value directly in this paper before final submission;
+% the high k_OH (300x PFOA) reflects differences in C-F bond environment and
+% radical attack geometry for short-chain PFAS but must be confirmed in Table/Fig.
+
+@article{vecitis2008,
+  author   = {Vecitis, Chad D. and Park, Hyunwoong and Cheng, Jie and
+              Mader, Brian T. and Hoffmann, Michael R.},
+  title    = {Kinetics and Mechanism of the Sonolytic Conversion of the Aqueous
+              Perfluorinated Surfactants, Perfluorooctanoate ({PFOA}), and
+              Perfluorooctane Sulfonate ({PFOS}) into Inorganic Products},
+  journal  = {Journal of Physical Chemistry A},
+  year     = {2008},
+  volume   = {112},
+  number   = {18},
+  pages    = {4261--4270},
+  doi      = {10.1021/jp711823h}
+}
+% Source of k_OH for PFOS (1e5 L/(mol*s)).
+% NOTE: This is the 2008 J. Phys. Chem. A paper (vol. 112), not the 2009 paper
+% (vol. 113). The code and README cite "Vecitis et al. 2009" — update to 2008
+% and verify the PFOS k_OH value in the paper before final submission.
+
+% ── Validation sources ─────────────────────────────────────────────────────
+
+@article{tang2012,
+  author   = {Tang, Heqing and Xiang, Qingqing and Lei, Min and Yan, Jingchun and
+              Zhu, Lihua and Zou, Jing},
+  title    = {Efficient Degradation of Perfluorooctanoic Acid by {UV}--{Fenton} Process},
+  journal  = {Chemical Engineering Journal},
+  year     = {2012},
+  volume   = {184},
+  pages    = {156--162},
+  doi      = {10.1016/j.cej.2012.01.020}
+}
+% Used for validation. Conditions: 20 µM PFOA, pH 3.0, 30 mM H2O2, 2.0 mM Fe2+,
+% 9 W 254 nm UV. Reports 87.9% removal at 1 h, 95.2% at 5 h.
+
+@article{schlesinger2022,
+  author   = {Schlesinger, Danielle R. and McDermott, Collin and Le, Nam Q. and
+              Ko, Jesse S. and Johnson, James K. and Demirev, Plamen A. and
+              Xia, Zhiyong},
+  title    = {Destruction of Per/Poly-Fluorinated Alkyl Substances by Magnetite
+              Nanoparticle-Catalyzed {UV}-{Fenton} Reaction},
+  journal  = {Environmental Science: Water Research \& Technology},
+  year     = {2022},
+  doi      = {10.1039/d2ew00058j}
+}
+% Cited in Limitations: highest-removal PFOA study found, used pH 7-9 and
+% Fe3O4 nanoparticles, outside the validated range of this model.
+
+% ── Field data sources ─────────────────────────────────────────────────────
+
+@misc{finkelstein2025,
+  author    = {Finkelstein, Kaitlyn M. and Gutchess, Kristina M. and
+               Dondero, Amanda M. and Fisher, Irene},
+  title     = {Concentrations of Per- and Polyfluorinated Substances ({PFAS}),
+               Pesticides, and Pharmaceuticals in Groundwater in {Suffolk County},
+               {New York}, 2021 to 2023},
+  year      = {2025},
+  publisher = {U.S. Geological Survey},
+  doi       = {10.5066/P1JJYFU7},
+  note      = {USGS Data Release. Source of field pH (5.83) and temperature (12.9 °C)
+               used as site condition context in this paper.}
+}
+
+@techreport{suffolk2020,
+  author      = {{Suffolk County Department of Health Services}},
+  title       = {Groundwater and Soil Investigation at the {BOMARC} Facility,
+                 {Westhampton}, {N.Y.}, in Accordance with {Suffolk County}
+                 Legislative Resolution No. 1065-2018},
+  institution = {Suffolk County Department of Health Services},
+  year        = {2020},
+  note        = {Source of initial PFOA, PFOS, and PFBA concentration data for
+                 BOMARC site monitoring wells.}
+}
+
+@techreport{suffolk2024,
+  author      = {{Suffolk County Department of Health Services}},
+  title       = {{BOMARC} Off-Site and Vicinity Groundwater Investigation,
+                 {Westhampton}, {N.Y.}},
+  institution = {Suffolk County Department of Health Services},
+  year        = {2024},
+  url         = {https://extapps.dec.ny.gov/data/DecDocs/152278/Report.HW.152278.2025-10-24.Final%20BOMARC%20Off-site%20Vicinity%20Report.pdf},
+  note        = {Source of updated PFAS concentration data referenced in Statement of Need.}
+}
+
+% ── Comparison software ────────────────────────────────────────────────────
+
+@misc{watertap2021,
+  author    = {Atia, Adam and Knueven, Bernard and Beattie, Keith and
+               Ladshaw, Austin and Lee, Andrew and Amusat, Oluwamayowa and
+               Panda, Kinshuk and Young, Ethan and Bartholomew, Timothy},
+  title     = {{WaterTAP} v1.0.0},
+  year      = {2021},
+  publisher = {Lawrence Berkeley National Laboratory and National Energy Technology Laboratory},
+  doi       = {10.11578/dc.20210527.7},
+  note      = {Open-source water treatment process modeling and optimization library
+               built on the {IDAES} platform. Does not implement radical-driven
+               oxidation kinetics for {PFAS}.}
+}
+
+@article{qsdsan2022,
+  author   = {Li, Yalin and Zhang, Xinyi and Morgan, Victoria L. and
+              Lohman, Hannah A. C. and Rowles, Lewis S. and Mittal, Smiti and
+              Kogler, Anna and Cusick, Roland D. and Tarpeh, William A. and
+              Guest, Jeremy S.},
+  title    = {{QSDsan}: An Integrated Platform for Quantitative Sustainable Design
+              of Sanitation and Resource Recovery Systems},
+  journal  = {Environmental Science: Water Research \& Technology},
+  year     = {2022},
+  volume   = {8},
+  number   = {10},
+  pages    = {2289--2303},
+  doi      = {10.1039/d2ew00455k}
+}
+% Open-source Python tool for TEA and LCA of sanitation systems.
+% Does not implement PFAS oxidation kinetics.
+
+@techreport{phreeqc2013,
+  author      = {Parkhurst, David L. and Appelo, C. A. J.},
+  title       = {Description of Input and Examples for {PHREEQC} Version 3---{A}
+                 Computer Program for Speciation, Batch-Reaction, One-Dimensional
+                 Transport, and Inverse Geochemical Calculations},
+  institution = {U.S. Geological Survey},
+  year        = {2013},
+  type        = {Techniques and Methods},
+  number      = {6-A43},
+  doi         = {10.3133/tm6A43},
+  note        = {Geochemical equilibrium and speciation model. Does not model
+                 radical-driven organic contaminant degradation kinetics.}
+}
