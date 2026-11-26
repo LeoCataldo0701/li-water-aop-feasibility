@@ -23,7 +23,7 @@
     "chain_length": 8,
     "molar_mass": 500.13,
     "k_OH": 1.0e5,
-    "k_OH_source": "Vecitis et al. 2009, J. Phys. Chem. A",
+    "k_OH_source": "Vecitis et al. 2008, J. Phys. Chem. A",
     "gac_removal_fraction": 0.70,
     "gac_source": "EPA PFAS Fact Sheet 2020; Long et al. 2023",
     "ny_mcl_ng_l": 10.0,
