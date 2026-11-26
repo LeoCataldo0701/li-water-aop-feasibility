@@ -79,7 +79,7 @@ Expected final line: `38 passed, 1 xfailed`. The expected failure documents a kn
 |---|---|---|
 | k_f_ref, k_r_ref, k_Fe, k_scav | literature | Walling 1975; Buxton et al. 1988 |
 | Ea (activation energy) | literature | De Laat & Gallard 1999 |
-| k_OH for PFOA, PFOS, PFBA | literature | Qian et al. 2016; Vecitis et al. 2009 |
+| k_OH for PFOA, PFOS, PFBA | literature | Qian et al. 2016; Vecitis et al. 2008 |
 | k_I (intermediate scavenging) | placeholder | Assumed |
 | k_s (background scavenging) | placeholder | Field estimate |
 | k_hv_h2o2, k_hv_fe (photolysis) | uncalibrated | Requires lamp photon flux |
