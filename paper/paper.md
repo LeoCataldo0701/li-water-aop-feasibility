@@ -221,8 +221,6 @@ test suite will flag any future change that closes it.
 - **Missing mechanisms.** UV activation of PFOA and the Fe³⁺–PFOA complex
   pathway are not implemented. The model underpredicts UV-driven PFOA removal
   by approximately a factor of fifteen.
-- **Placeholder and uncalibrated parameters.** $k_I$, $k_s$,
-  $k_{h\nu,\text{H}_2\text{O}_2}$, and $k_{h\nu,\text{Fe}}$ are not measured values.
 - **Batch reactor only.** No flow, residence time distribution, reactor geometry,
   or mass transfer.
 - **Lumped intermediate.** One species represents all fluorinated degradation
