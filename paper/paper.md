@@ -14,7 +14,7 @@ Authors:
     Corresponding: true
     Affiliation: 1
 Affiliations:
-  - Name: CUNY Medgar Evers College, Brooklyn, New York, USA
+  - Name: Plainview-Old Bethpage JFK High School
     Index: 1
 Bibliography: paper.bib
 ---
