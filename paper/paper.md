@@ -127,8 +127,7 @@ Every kinetic parameter carries an explicit status in `photofenton/data/paramete
 - **Placeholder:** $k_I$ (lumped intermediate scavenging) and $k_s$ (background
   OH scavenging). These are order-of-magnitude estimates and have not been
   independently measured.
-- **Uncalibrated:** $k_{h\nu,\text{H}_2\text{O}_2}$ and $k_{h\nu,\text{Fe}}$
-  (photolysis rate constants). These scale with lamp photon flux, which is not
+- **Uncalibrated:** Photolysis rate constants scale with lamp photon flux, and this changing parameter is not
   available for this model.
 
 Hydroxyl-radical rate constants for PFOA ($3 \times 10^5$ L mol⁻¹ s⁻¹) and
