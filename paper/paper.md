@@ -233,6 +233,16 @@ test suite will flag any future change that closes it.
   Pseudo-first-order behavior may not hold across this range.
 - **No external validation.** The package has no external users at the time of
   submission. It is currently used only for BOMARC site screening.
+  The package has, however, been used in collaboration with the Long Island
+  principal hydrologist to provide data for public water main extensions on
+  Long Island.
+- **Parameter Calibration** A few kinetic parameters are not calibrated against experimental data.
+  The intermediate formation rate constant (k_I) and the surface-mediated scavenging rate (k_s) are computational
+  estimates with no current, direct experimental backing. The photolysis rates for H₂O₂ (k_hv_h2o2) and Fe(III)
+  (k_hv_fe) are uncalibrated estimates. Results are therefore screening-level and should not be used as
+  quantitative predictions of treatment performance without site-specific calibration. The sensitivity analysis
+  in sensitivity_analysis() quantifies how strongly the predicted removal depends on each parameter, and users should
+  treat these results as ranges, not point estimates.
 
 # AI usage disclosure
 
