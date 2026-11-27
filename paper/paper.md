@@ -1,6 +1,6 @@
 ---
-title: "photofenton: A Python package for batch photo-Fenton kinetic screening and reagent cost estimation for PFAS destruction in groundwater"
-tags:
+Title: "PhotoFenton: A Python Package for Batch Photo-Fenton Kinetic Screening and Reagent Cost Estimation for PFAS Destruction in Groundwater"
+Tags:
   - Python
   - PFAS
   - advanced oxidation processes
@@ -8,16 +8,15 @@ tags:
   - water treatment
   - environmental engineering
   - groundwater remediation
-authors:
+Authors:
   - name: Leonzio Cataldo
-    orcid: 0000-0000-0000-0000
-    corresponding: true
-    affiliation: 1
-affiliations:
-  - name: CUNY Medgar Evers College, Brooklyn, New York, USA
-    index: 1
-date: 2026-11-26
-bibliography: paper.bib
+    Orcid: 0009-0008-4494-3437
+    Corresponding: true
+    Affiliation: 1
+Affiliations:
+  - Name: CUNY Medgar Evers College, Brooklyn, New York, USA
+    Index: 1
+Bibliography: paper.bib
 ---
 
 # Summary
